@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 15:04:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:18:02 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,7 @@ void ServerManager::run() {
                     close(_fds[i].fd);
                     _fds.erase(_fds.begin() + i);
                     --i;
-                } else {
-                    // Process client input using CommandManager
+                } else {   
                     _commandManager->executeCommand(_fds[i].fd, input);
                 }
             }

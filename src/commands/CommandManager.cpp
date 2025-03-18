@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 12:31:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:19:11 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,23 +25,48 @@ CommandManager::~CommandManager() {
 	}
 }
 
-void CommandManager::executeCommand(int client_fd, const std::string& input) {
-	std::istringstream iss(input);
-	std::vector<std::string> args;
+ParsedMessage CommandManager::parseInput(const std::string &input){
+	ParsedMessage parsedMsg;
+	std::istringstream stream(input);
 	std::string token;
-	while (iss >> token)
-		args.push_back(token);
 
-	if (args.empty())
-		return;
-
-	std::string commandName = args[0];
-
-	std::transform(commandName.begin(), commandName.end(), commandName.begin(), (int(*)(int))std::toupper);
-
-	if (_commands.find(commandName) != _commands.end()) {
-		_commands[commandName]->executeCommand(client_fd, args);
-	} else {
-		send(client_fd, "Unknown command\n", 16, 0);
+	// Check for prefix
+	if (!input.empty() && input[0] == ':') {
+		stream >> parsedMsg.prefix;
+		parsedMsg.prefix = parsedMsg.prefix.substr(1);
 	}
+
+	// Read command
+	if (stream >> parsedMsg.command) {
+		while (stream >> token) {
+			if (token[0] == ':') {
+				std::string rest;
+				std::getline(stream, rest);
+				parsedMsg.params.push_back(token.substr(1) + rest);
+				break;  // Stop reading more params
+			}
+			parsedMsg.params.push_back(token);
+		}
+	}
+
+	return parsedMsg;
+}
+
+void CommandManager::executeCommand(int client_fd, const std::string& input) {
+    ParsedMessage parsedMsg = parseInput(input); // Use our parser
+
+    if (parsedMsg.command.empty()) {
+        return; // Ignore empty input
+    }
+
+    // Convert command to uppercase (IRC commands are case-insensitive)
+    std::transform(parsedMsg.command.begin(), parsedMsg.command.end(), 
+                   parsedMsg.command.begin(), ::toupper);
+
+    // Check if command exists in our map
+    if (_commands.find(parsedMsg.command) != _commands.end()) {
+        _commands[parsedMsg.command]->executeCommand(client_fd, parsedMsg);
+    } else {
+        send(client_fd, "Unknown command\n", 16, 0);
+    }
 }

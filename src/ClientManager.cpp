@@ -6,11 +6,13 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:20:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 15:17:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:10:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ClientManager.hpp"
+#include <netinet/in.h>
+#include <sstream>
 
 // Constructor and destructor
 ClientManager::ClientManager(const std::string &password): _password(password) {}
@@ -131,39 +133,16 @@ void ClientManager::unregisterClient(const std::string &nickname, int client_fd)
     }
 }
 
-// Debugging
-void ClientManager::printClientList() const {
-    for (std::map<std::string, RegisteredClient>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
-        std::string status = it->second.isOnline() ? "online" : "offline";
-        std::cout << it->second.getNickname() << "-" 
-                  << it->second.getUsername() << "-" 
-                  << it->second.getFd() << "-" 
-                  << status << std::endl;
+// Testing function for testing command POPULATION
+void ClientManager::printClientList(const int &client_fd) const {
+	for (std::map<std::string, RegisteredClient>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
+		std::string status = it->second.isOnline() ? "online" : "offline";
+		
+		std::ostringstream oss;
+		oss << it->second.getFd();
+		std::string fdStr = oss.str();
+
+		std::string line = it->second.getNickname() + " " + it->second.getUsername() + "-" + fdStr + "-" + status + "\n";
+		send(client_fd, line.c_str(), line.length(), 0);
     }
 }
-
-/*std::string ClientManager::getClientListAsString() const {
-    std::string result;
-    
-    // Check if there are any clients
-    if (_registeredClients.empty()) {
-        return "No clients connected.";
-    }
-    
-    // Iterate through the registered clients
-    for (std::map<int, RegisteredClient*>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
-        result += "Client FD: " + std::to_string(it->first);
-        
-        // Add any additional client information you want to display
-        // For example, if your Client class has a getNickname() method:
-        if (it->second->isRegistered()) {
-            result += " - Nickname: " + it->second->getNickname();
-        } else {
-            result += " - Not registered";
-        }
-        
-        result += "\n";
-    }
-    
-    return result;
-}*/

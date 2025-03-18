@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:16:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 12:13:30 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:27:40 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ private:
 
 public:
     PopulationCommand(ClientManager* clientManager);
-    void executeCommand(int client_fd, const std::vector<std::string>& args);
+    void executeCommand(int client_fd, const ParsedMessage& parsedMsg);
 };
 
 #endif

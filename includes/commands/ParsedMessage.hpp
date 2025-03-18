@@ -1,26 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ICommand.hpp                                       :+:      :+:    :+:   */
+/*   ParsedMessage.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 11:07:12 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:20:02 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/03/18 15:54:46 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/18 16:14:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ICOMMAND_HPP
-# define ICOMMAND_HPP
+#include <iostream>
+#include <vector>
 
-# include <vector>
-# include <iostream>
-# include "ParsedMessage.hpp"
+struct ParsedMessage {
+    std::string prefix;
+    std::string command;
+    std::vector<std::string> params;
 
-class ICommand {
-	public:
-		virtual ~ICommand() {}
-		virtual void executeCommand(int client_fd, const ParsedMessage& parsedMsg) = 0;
+	// Struct constructor
+	ParsedMessage() : prefix(""), command(""), params() {}
 };
-
-#endif

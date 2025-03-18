@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:16:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 14:47:56 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 16:56:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ public:
     void setClientOffline(int fd);
     bool reconnectClient(const std::string &nickname, int new_fd);
     void unregisterClient(const std::string &nickname, int client_fd);
-    void printClientList() const;
+    void printClientList(const int &client_fd) const;
     std::string getClientListAsString() const;
 };
 
