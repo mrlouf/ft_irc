@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:16:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:56:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:23:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include <map>
 # include <string>
 # include <iostream>
-# include "RegisteredClient.hpp"
+# include "objects/RegisteredClient.hpp"
 
 class ClientManager {
 private:
