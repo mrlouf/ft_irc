@@ -6,11 +6,11 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:17:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/17 15:32:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/18 17:23:09 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/RegisteredClient.hpp"
+#include "../../includes/objects/RegisteredClient.hpp"
 
 RegisteredClient::RegisteredClient() : _fd(-1), _nickname(""), _username(""), _online(false) {}
 

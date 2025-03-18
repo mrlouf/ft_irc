@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/18 12:37:02 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/18 17:26:29 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,9 @@ SRC         := src/main.cpp \
 				src/ServerManager.cpp \
 				src/SocketManager.cpp \
 				src/ClientManager.cpp \
-				src/RegisteredClient.cpp \
+				src/ChannelManager.cpp \
+				src/objects/RegisteredClient.cpp \
+				src/objects/Channel.cpp \
 				src/commands/CommandManager.cpp \
 				src/commands/PopulationCommand.cpp \
 				src/commands/QuitCommand.cpp 
@@ -56,6 +58,8 @@ all: directories $(NAME)
 directories:
 	@mkdir -p $(OBJ_DIR)/src/commands
 	@mkdir -p $(DEP_DIR)/src/commands
+	@mkdir -p $(OBJ_DIR)/src/objects
+	@mkdir -p $(DEP_DIR)/src/objects
 
 -include $(DEPS)
 
