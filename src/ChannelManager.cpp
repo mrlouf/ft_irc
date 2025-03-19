@@ -6,14 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:28:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:29:03 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:41:29 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ChannelManager.hpp"
+#include "../includes/ClientManager.hpp"
 
 // Constructor and Destructor
-ChannelManager::ChannelManager() {}
+ChannelManager::ChannelManager(ClientManager *clientManager): _clientManager(clientManager) {}
 
 ChannelManager::~ChannelManager() {}
 
@@ -46,9 +47,26 @@ bool ChannelManager::removeChannel(const std::string &name) {
 	return (true);
 }
 
+std::vector<Channel*> ChannelManager::getClientChannels(int client_fd) {
+	std::vector<Channel*> _clientChannels;
+	RegisteredClient *client = _clientManager->getClientFromFd(client_fd);
+
+	if (!client) {
+		return _clientChannels;
+	}
+
+	for (std::map<std::string, Channel>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
+		if (it->second.isMember(client)) {
+			_clientChannels.push_back(&(it->second));
+		}
+	}
+
+	return (_clientChannels);
+}
+
 void ChannelManager::printChannelList(int client_fd){
 	if (_channels.empty()) {
-		std::string response = "No available channels.\n";
+		std::string response = "No available channels.\r\n";
 		send(client_fd, response.c_str(), response.length(), 0);
 		return;
 	}
@@ -84,9 +102,9 @@ void ChannelManager::printChannelList(int client_fd){
 				response << members[i]->getNickname();
 			}
 		}
-		response << "\n";
+		response << "\r\n";
 	}
 
 	std::string responseStr = response.str();
 	send(client_fd, responseStr.c_str(), responseStr.length(), 0);
-	}
+}

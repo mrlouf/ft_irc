@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:07:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:16:32 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:42:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class ServerManager {
 		std::string requestNickname(int client_fd);
 		bool handleNewClientRegistration(int client_fd, const std::string& nickname);
 		void welcomeBackClient(int client_fd, const std::string& nickname);
-		bool readFromClient(int client_fd, std::string &output);
+		bool readFromClient(int client_fd, std::string &input);
 		void disconnectClient(const std::string &nickname, int client_fd);
 };
 

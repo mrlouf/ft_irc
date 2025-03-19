@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:31:42 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 12:12:36 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 13:05:31 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 class ChannelManager;
 class ClientManager;
+class Channel;
 
 class JoinCommand : public ICommand {
 	private:
@@ -39,6 +40,7 @@ class JoinCommand : public ICommand {
 
 		//Method
 		void executeCommand(int client_fd, const ParsedMessage &parsedMsg);
+		void broadcast(Channel *channel, int client_fd);
 };
 
 #endif

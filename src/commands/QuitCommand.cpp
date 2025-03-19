@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 12:28:52 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:48:19 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:33:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,33 +15,38 @@
 #include "../../includes/ClientManager.hpp"
 #include <iostream>
 
-//TODO: make the custom messages be passed to channels, not mirrored back to client. 
-
-QuitCommand::QuitCommand(ServerManager* serverManager) : _serverManager(serverManager) {}
+QuitCommand::QuitCommand(ServerManager *serverManager, ChannelManager *channelManager) : _serverManager(serverManager), _channelManager(channelManager) {}
 
 void QuitCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) {
-    std::string goodbye;
-
-    if (!parsedMsg.params.empty()) {
-        //goodbye = parsedMsg.params[0];
-        for(std::vector<std::string>::const_iterator it = parsedMsg.params.begin(); it != parsedMsg.params.end(); it++) {
-            goodbye += *it;
-            goodbye += " ";
-        }
-    } else {
-        goodbye = "Goodbye! Disconnecting from server.\n";
-    }
-
-    send(client_fd, goodbye.c_str(), goodbye.length(), 0);
-    std::cout << "Client " << client_fd << " has quit." << std::endl;
-
     ClientManager *clientManager = _serverManager->getClientManager();
     RegisteredClient *client = clientManager->getClientFromFd(client_fd);
-    
-    if (client) {
-        std::string nickname = client->getNickname();
-        _serverManager->disconnectClient(nickname, client_fd);
-    } else {
+
+    if (!client) {
         std::cerr << "Error: Client with fd " << client_fd << " not found." << std::endl;
+        return;
     }
+
+    std::string nickname = client->getNickname();
+    std::string goodbyeMsg = "Client " + nickname + " has quit.";
+
+    if (!parsedMsg.params.empty()) {
+        goodbyeMsg = parsedMsg.params[0];
+        for (size_t i = 1; i < parsedMsg.params.size(); i++) {
+            goodbyeMsg += " " + parsedMsg.params[i];
+        }
+    }
+
+    // Format the QUIT message as per RFC 2812
+    std::string quitMessage = ":" + nickname + " QUIT :" + goodbyeMsg + "\r\n";
+
+    // Notify all channels the client is part of
+    std::vector<Channel *> channels = _channelManager->getClientChannels(client_fd);
+    for (size_t i = 0; i < channels.size(); i++) {
+        channels[i]->broadcastMessage(quitMessage, client);
+        channels[i]->removeMember(client);
+    }
+
+
+    // Remove client from server
+    _serverManager->disconnectClient(nickname, client_fd);
 }

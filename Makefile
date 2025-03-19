@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/19 12:09:07 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/19 18:10:07 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,6 +45,10 @@ SRC         := src/main.cpp \
 				src/objects/RegisteredClient.cpp \
 				src/objects/Channel.cpp \
 				src/commands/CommandManager.cpp \
+				src/commands/PassCommand.cpp \
+				src/commands/NickCommand.cpp \
+				src/commands/UserCommand.cpp \
+				src/commands/CapCommand.cpp \
 				src/commands/PopulationCommand.cpp \
 				src/commands/ChannelListCommand.cpp \
 				src/commands/QuitCommand.cpp \

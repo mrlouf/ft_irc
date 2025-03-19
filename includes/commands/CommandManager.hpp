@@ -6,14 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 12:10:06 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:09:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMANDMANAGER_HPP
 # define COMMANDMANAGER_HPP
 
-# include <string>
+# include <sstream>
+# include <iostream>
 # include <map>
 # include <vector>
 # include <sstream>
@@ -23,6 +24,10 @@
 # include <sys/types.h>
 # include <sys/socket.h>
 
+# include "PassCommand.hpp"
+# include "NickCommand.hpp"
+# include "UserCommand.hpp"
+# include "CapCommand.hpp"
 # include "PopulationCommand.hpp"
 # include "QuitCommand.hpp"
 # include "JoinCommand.hpp"

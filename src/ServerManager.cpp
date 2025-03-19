@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:17:46 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:35:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ const std::string ServerManager::RECONECTSCCS = "Welcome back to ft_irc";
 ServerManager::ServerManager(int port, const std::string &password) 
     : _socketManager(new SocketManager(port)), 
       _clientManager(new ClientManager(password)),
-      _channelManager(new ChannelManager()), 
+      _channelManager(new ChannelManager(_clientManager)), 
       _commandManager(new CommandManager(_clientManager, _channelManager, this)) {
 }
 
@@ -58,24 +58,24 @@ void ServerManager::run() {
             if (_fds[i].fd == _socketManager->getServerFd() && (_fds[i].revents & POLLIN)) {
                 int client_fd = _socketManager->acceptConnection();
                 if (client_fd != -1) {
-                    std::cout << "Client connected with fd: " << client_fd << "!" << std::endl;
+                    std::cout << "Client connected (fd:" << client_fd << ")" << std::endl;
 
                     struct pollfd client_poll_fd;
                     client_poll_fd.fd = client_fd;
                     client_poll_fd.events = POLLIN | POLLHUP;
                     _fds.push_back(client_poll_fd);
-
-                    handleClientAttempt(client_fd);
                 }
             } else if (_fds[i].revents & POLLIN) {
                 std::string input;
                 if (!readFromClient(_fds[i].fd, input)) {
                     std::cout << "Client disconnected (fd: " << _fds[i].fd << ")" << std::endl;
                     _clientManager->setClientOffline(_fds[i].fd);
+                    _clientManager->clearPendingRegistration(_fds[i].fd);
                     close(_fds[i].fd);
                     _fds.erase(_fds.begin() + i);
                     --i;
-                } else {   
+                } else {
+                    std::cout << "INPUT:" << input << std::endl;
                     _commandManager->executeCommand(_fds[i].fd, input);
                 }
             }
@@ -83,95 +83,24 @@ void ServerManager::run() {
     }
 }
 
-void ServerManager::handleClientAttempt(int client_fd) {
-    if (!requestPassword(client_fd)) {
-        send(client_fd, "Wrong password.\n", 16, 0);
-        _socketManager->closeSocket(client_fd);
-        return;
-    }
-
-    std::string nickname = requestNickname(client_fd);
-    if (nickname.empty()) {
-        _socketManager->closeSocket(client_fd);
-        return;
-    }
-
-    if (_clientManager->isNicknameRegistered(nickname)) {
-        if (_clientManager->reconnectClient(nickname, client_fd)) {
-            welcomeBackClient(client_fd, nickname);
-        } else {
-            send(client_fd, "Nickname already in use.\n", 24, 0);
-            _socketManager->closeSocket(client_fd);
-        }
-    } else {
-        if (!handleNewClientRegistration(client_fd, nickname)) {
-            _socketManager->closeSocket(client_fd);
-        }
-    }
-}
-
-bool ServerManager::requestPassword(int client_fd) {
-    send(client_fd, "Password:", 9, 0);
-
-    std::string password;
-    if (!readFromClient(client_fd, password) || password.empty()) {
-        return false;
-    }
-
-    return _clientManager->authenticateClient(password);
-}
-
-std::string ServerManager::requestNickname(int client_fd) {
-    send(client_fd, "Enter Nickname:", 15, 0);
-
-    std::string nickname;
-    if (!readFromClient(client_fd, nickname) || nickname.empty()) {
-        return "";
-    }
-
-    return nickname;
-}
-
-bool ServerManager::handleNewClientRegistration(int client_fd, const std::string& nickname) {
-    send(client_fd, "Enter Username:", 15, 0);
+bool ServerManager::readFromClient(int client_fd, std::string &input) {
+    char buffer[1024];
+    ssize_t bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     
-    std::string username;
-    if (!readFromClient(client_fd, username) || username.empty()) {
-        send(client_fd, REGISTERERR.c_str(), REGISTERERR.size(), 0);
-        return false;
-    }
-
-    if (!_clientManager->registerClient(nickname, username, client_fd)) {
-        send(client_fd, REGISTERERR.c_str(), REGISTERERR.size(), 0);
-        return false;
-    }
-
-    std::string welcome_msg = REGISTERSCCS + nickname + "!\n" + WELCOMEMSG;
-    send(client_fd, welcome_msg.c_str(), welcome_msg.size(), 0);
-    std::cout << "Client fully registered!" << std::endl;
-    return true;
-}
-
-void ServerManager::welcomeBackClient(int client_fd, const std::string& nickname) {
-    std::string welcome_msg = RECONECTSCCS + ", " + nickname + "!";
-    send(client_fd, welcome_msg.c_str(), welcome_msg.size(), 0);
-    std::cout << "Client reconnected!" << std::endl;
-}
-
-bool ServerManager::readFromClient(int client_fd, std::string &output) {
-    char buffer[BUFFER_SIZE] = {0};
-    ssize_t bytes_read = read(client_fd, buffer, BUFFER_SIZE);
-
     if (bytes_read <= 0) {
-        return false; // Client disconnected
+        return false;
     }
-
-    output.assign(buffer, bytes_read);
     
-    if (!output.empty() && output[output.size() - 1] == '\n') {
-        output.erase(output.size() - 1);
+    buffer[bytes_read] = '\0';
+    input = buffer;
+    
+    if (input.length() >= 2 && input[input.length() - 2] == '\r' && input[input.length() - 1] == '\n') {
+        input = input.substr(0, input.length() - 2);
     }
-
+    else if (input.length() >= 1 && input[input.length() - 1] == '\n') {
+        input = input.substr(0, input.length() - 1);
+    }
+    
     return true;
 }
 

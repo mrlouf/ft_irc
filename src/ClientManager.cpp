@@ -6,13 +6,12 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:20:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 17:10:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:46:43 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/ClientManager.hpp"
-#include <netinet/in.h>
-#include <sstream>
+#include "../includes/objects/Channel.hpp"
 
 // Constructor and destructor
 ClientManager::ClientManager(const std::string &password): _password(password) {}
@@ -43,14 +42,6 @@ RegisteredClient *ClientManager::getClientFromFd(int fd) {
 }
 
 // Methods
-bool ClientManager::authenticateClient(const std::string &input) {
-    if (input == _password) {
-        std::cout << "Client authenticated." << std::endl;
-        return true;
-    }
-    return false;
-}
-
 bool ClientManager::isNicknameRegistered(const std::string& nickname) const {
     return _registeredClients.find(nickname) != _registeredClients.end();
 }
@@ -133,16 +124,92 @@ void ClientManager::unregisterClient(const std::string &nickname, int client_fd)
     }
 }
 
-// Testing function for testing command POPULATION
+void ClientManager::addPendingPassword(int fd, const std::string& password) {
+    _pendingPasswords[fd] = password;
+    std::cout << "Added pending password for fd: " << fd << std::endl;
+}
+
+void ClientManager::addPendingNickname(int fd, const std::string& nickname) {
+    _pendingNicknames[fd] = nickname;
+    std::cout << "Added pending nickname for fd: " << fd << ": " << nickname << std::endl;
+}
+
+void ClientManager::addPendingUsername(int fd, const std::string& username) {
+    _pendingUsernames[fd] = username;
+    std::cout << "Added pending username for fd: " << fd << ": " << username << std::endl;
+}
+
+bool ClientManager::isPendingRegistrationComplete(int fd) {
+    return _pendingPasswords.find(fd) != _pendingPasswords.end() &&
+           _pendingNicknames.find(fd) != _pendingNicknames.end() &&
+           _pendingUsernames.find(fd) != _pendingUsernames.end();
+}
+
+void ClientManager::completePendingRegistration(int fd) {
+    if (isPendingRegistrationComplete(fd)) {
+        std::string password = _pendingPasswords[fd];
+        std::string nickname = _pendingNicknames[fd];
+        std::string username = _pendingUsernames[fd];
+        
+        // Verify password
+        if (password != _password) {
+            std::cout << "Password verification failed for fd: " << fd << std::endl;
+            return;
+        }
+        
+        // Check if nickname is already registered
+        if (isNicknameRegistered(nickname)) {
+            std::cout << "Nickname already registered: " << nickname << std::endl;
+            return;
+        }
+        
+        // Register the client
+        registerClient(nickname, username, fd);
+        
+        // Clean up pending maps
+        clearPendingRegistration(fd);
+        
+        std::cout << "Registration complete for fd: " << fd << std::endl;
+    } else {
+        std::cout << "Cannot complete registration, missing information for fd: " << fd << std::endl;
+    }
+}
+
+void ClientManager::clearPendingRegistration(int fd) {
+    _pendingPasswords.erase(fd);
+    _pendingNicknames.erase(fd);
+    _pendingUsernames.erase(fd);
+}
+
+bool ClientManager::hasPendingPassword(int fd) {
+    return _pendingPasswords.find(fd) != _pendingPasswords.end();
+}
+
+bool ClientManager::hasPendingNickname(int fd) {
+    return _pendingNicknames.find(fd) != _pendingNicknames.end();
+}
+
+bool ClientManager::hasPendingUsername(int fd) {
+    return _pendingUsernames.find(fd) != _pendingUsernames.end();
+}
+
+std::string ClientManager::getPendingNickname(int fd) {
+    if (hasPendingNickname(fd)) {
+        return _pendingNicknames[fd];
+    }
+    return "";
+}
+
+//! Testing stuff
 void ClientManager::printClientList(const int &client_fd) const {
-	for (std::map<std::string, RegisteredClient>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
+    for (std::map<std::string, RegisteredClient>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
 		std::string status = it->second.isOnline() ? "online" : "offline";
 		
 		std::ostringstream oss;
 		oss << it->second.getFd();
 		std::string fdStr = oss.str();
 
-		std::string line = it->second.getNickname() + " " + it->second.getUsername() + "-" + fdStr + "-" + status + "\n";
+		std::string line = it->second.getNickname() + " " + it->second.getUsername() + "-" + fdStr + "-" + status + "\r\n";
 		send(client_fd, line.c_str(), line.length(), 0);
     }
 }

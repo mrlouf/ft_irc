@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:33:55 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 12:23:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:51:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,30 +36,56 @@ void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) 
 
 	if (_channelManager->getChannelList().find(name) == _channelManager->getChannelList().end()) {
 		if (_channelManager->createChannel(name)) {
-			std::string creationGoodOutput = CREATIONSCCS + name + "\n";
+			std::string creationGoodOutput = CREATIONSCCS + name + "\r\n";
 			send(client_fd, creationGoodOutput.c_str(), creationGoodOutput.length(), 0);
 		} else {
-			std::string creationBadOutput = CREATIONERR + name + "\n";
+			std::string creationBadOutput = CREATIONERR + name + "\r\n";
 			send(client_fd, creationBadOutput.c_str(), creationBadOutput.length(), 0);
 		}
 	}
 
 	Channel *channel = _channelManager->getChannel(name);
+
 	if (channel->getOperators().empty()) {
 		if (channel->addOperator(client)) {
-			std::string operatorGoodMessage = JOINEDOPERATORSCCS + name + "\n";
+			std::string operatorGoodMessage = JOINEDOPERATORSCCS + name + "\r\n";
 			send(client_fd, operatorGoodMessage.c_str(), operatorGoodMessage.length(), 0);
+			broadcast(channel, client_fd);
 		} else {
-			std::string operatorBadMessage = JOINEDOPERATORERR + name + "\n";
+			std::string operatorBadMessage = JOINEDOPERATORERR + name + "\r\n";
 			send(client_fd, operatorBadMessage.c_str(), operatorBadMessage.length(), 0);
 		}
 	} else {
 		if (channel->addMember(client)) {
-			std::string memberGoodMessage = JOINEDMEMBERSCCS + name + "\n";
+			std::string memberGoodMessage = JOINEDMEMBERSCCS + name + "\r\n";
 			send(client_fd, memberGoodMessage.c_str(), memberGoodMessage.length(), 0);
+			broadcast(channel, client_fd);
 		} else {
-			std::string memberBadMessage = JOINEDMEMBERERR + name + "\n";
+			std::string memberBadMessage = JOINEDMEMBERERR + name + "\r\n";
 			send(client_fd, memberBadMessage.c_str(), memberBadMessage.length(), 0);
 		}
 	}
+}
+
+void JoinCommand::broadcast(Channel *channel, int client_fd){
+    std::vector<RegisteredClient*> members = channel->getMembers();
+    std::vector<RegisteredClient*> operators = channel->getOperators();
+    
+    // Broadcasting to all members
+    for (size_t i = 0; i < members.size(); ++i) {
+        RegisteredClient* member = members[i];
+        if (member->getFd() != client_fd) {
+            std::string message = member->getNickname() + " joined the channel!\r\n";
+            send(member->getFd(), message.c_str(), message.length(), 0);
+        }
+    }
+    
+    // Broadcasting to all operators
+    for (size_t i = 0; i < operators.size(); ++i) {
+        RegisteredClient* operatorClient = operators[i];
+        if (operatorClient->getFd() != client_fd) {
+            std::string message = operatorClient->getNickname() + " joined the channel!\r\n";
+            send(operatorClient->getFd(), message.c_str(), message.length(), 0);
+        }
+    }
 }

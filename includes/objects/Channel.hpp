@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:07:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 10:56:24 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:23:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 # include <string>
 # include <map>
 # include <algorithm>
+# include <arpa/inet.h>
+# include <netinet/in.h>
+
 # include "RegisteredClient.hpp"
 
 class Channel {
@@ -42,10 +45,12 @@ class Channel {
 		void setName(const std::string &name);
 
 		// Methods
+		bool isMember(RegisteredClient *client);
 		bool addMember(RegisteredClient *client);
 		bool addOperator(RegisteredClient *oper);
-		bool RemoveMember(RegisteredClient *client);
+		bool removeMember(RegisteredClient *client);
 		bool RemoveOperator(RegisteredClient *oper);
+		void broadcastMessage(const std::string& message, RegisteredClient* sender);
 
 };
 
