@@ -6,17 +6,20 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:19:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 12:10:08 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/commands/CommandManager.hpp"
+#include "../../includes/ChannelManager.hpp"
 
 // Constructor and Destructor
 
-CommandManager::CommandManager(ClientManager* clientManager, ServerManager* serverManager) {
+CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *channelManager, ServerManager *serverManager) {
     _commands["POPULATION"] = new PopulationCommand(clientManager);
+	_commands["CHANNELLIST"] = new ChannelListCommand(channelManager);
     _commands["QUIT"] = new QuitCommand(serverManager);
+	_commands["JOIN"] = new JoinCommand(channelManager, clientManager);
 }
 
 CommandManager::~CommandManager() {

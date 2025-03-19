@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/18 17:26:29 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/19 12:09:07 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,9 @@ SRC         := src/main.cpp \
 				src/objects/Channel.cpp \
 				src/commands/CommandManager.cpp \
 				src/commands/PopulationCommand.cpp \
-				src/commands/QuitCommand.cpp 
+				src/commands/ChannelListCommand.cpp \
+				src/commands/QuitCommand.cpp \
+				src/commands/JoinCommand.cpp 
 
 OBJS        = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 DEPS        = $(addprefix $(DEP_DIR)/, $(SRC:.cpp=.d))

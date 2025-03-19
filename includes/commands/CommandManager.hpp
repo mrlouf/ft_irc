@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:27:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 12:10:06 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,11 @@
 
 # include "PopulationCommand.hpp"
 # include "QuitCommand.hpp"
+# include "JoinCommand.hpp"
+# include "ChannelListCommand.hpp"
 
 class ServerManager;
+class ChannelManager;
 
 class CommandManager {
 	private:
@@ -34,7 +37,7 @@ class CommandManager {
 
 	public:
 		// Constructor and Destructor
-		CommandManager(ClientManager* clientManager, ServerManager* serverManager);
+		CommandManager(ClientManager* clientManager, ChannelManager *channelmanager, ServerManager* serverManager);
 		~CommandManager();
 
 		// Methods
