@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:18:02 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 11:17:46 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ const std::string ServerManager::RECONECTSCCS = "Welcome back to ft_irc";
 ServerManager::ServerManager(int port, const std::string &password) 
     : _socketManager(new SocketManager(port)), 
       _clientManager(new ClientManager(password)),
-      _commandManager(new CommandManager(_clientManager, this)) {
+      _channelManager(new ChannelManager()), 
+      _commandManager(new CommandManager(_clientManager, _channelManager, this)) {
 }
 
 ServerManager::~ServerManager() {

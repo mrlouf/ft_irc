@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:07:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 14:44:26 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 11:16:32 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 
 # include "SocketManager.hpp"
 # include "ClientManager.hpp"
-#include "commands/CommandManager.hpp"
+# include "ChannelManager.hpp"
+# include "commands/CommandManager.hpp"
 
 class ServerManager {
 	private:
@@ -34,6 +35,7 @@ class ServerManager {
 		std::vector<struct pollfd> _fds;
 		SocketManager *_socketManager;
 		ClientManager *_clientManager;
+		ChannelManager *_channelManager;
 		CommandManager *_commandManager;
 
 		//Message macros
