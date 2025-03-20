@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/19 18:10:07 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/20 12:30:34 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,9 +42,9 @@ SRC         := src/main.cpp \
 				src/SocketManager.cpp \
 				src/ClientManager.cpp \
 				src/ChannelManager.cpp \
+				src/CommandManager.cpp \
 				src/objects/RegisteredClient.cpp \
 				src/objects/Channel.cpp \
-				src/commands/CommandManager.cpp \
 				src/commands/PassCommand.cpp \
 				src/commands/NickCommand.cpp \
 				src/commands/UserCommand.cpp \
@@ -52,7 +52,11 @@ SRC         := src/main.cpp \
 				src/commands/PopulationCommand.cpp \
 				src/commands/ChannelListCommand.cpp \
 				src/commands/QuitCommand.cpp \
-				src/commands/JoinCommand.cpp 
+				src/commands/JoinCommand.cpp \
+				src/commands/PingCommand.cpp \
+				src/commands/PongCommand.cpp \
+				src/commands/PrivmsgCommand.cpp \
+				src/commands/WhoCommand.cpp \
 
 OBJS        = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 DEPS        = $(addprefix $(DEP_DIR)/, $(SRC:.cpp=.d))

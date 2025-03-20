@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:07:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 15:42:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 11:41:05 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 # include "SocketManager.hpp"
 # include "ClientManager.hpp"
 # include "ChannelManager.hpp"
-# include "commands/CommandManager.hpp"
+# include "CommandManager.hpp"
 
 class ServerManager {
 	private:
@@ -32,6 +32,7 @@ class ServerManager {
 		ServerManager(const ServerManager &other);
 		ServerManager &operator=(const ServerManager &other);
 		
+		std::string _serverName;
 		std::vector<struct pollfd> _fds;
 		SocketManager *_socketManager;
 		ClientManager *_clientManager;
@@ -51,6 +52,7 @@ class ServerManager {
 
 		// Getters
 		ClientManager *getClientManager();
+		std::string &getServerName();
 
 		//Methods
 		void run();
@@ -61,6 +63,9 @@ class ServerManager {
 		void welcomeBackClient(int client_fd, const std::string& nickname);
 		bool readFromClient(int client_fd, std::string &input);
 		void disconnectClient(const std::string &nickname, int client_fd);
+		void sendPingToClients();
+		void checkClientTimeouts();
+
 };
 
 #endif

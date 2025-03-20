@@ -6,13 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:33:55 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 17:51:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:15:50 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/commands/JoinCommand.hpp"
 #include "../../includes/ChannelManager.hpp"
 #include "../../includes/ClientManager.hpp"
+#include "../../includes/ServerManager.hpp"
 
 // Message macros
 const std::string JoinCommand::CREATIONSCCS = "Channel created with name ";
@@ -25,67 +26,78 @@ const std::string JoinCommand::JOINEDMEMBERERR = "Failed to join as member to ch
 // Constructors and destructor
 JoinCommand::JoinCommand() {}
 
-JoinCommand::JoinCommand(ChannelManager *channelManager, ClientManager *clientManager) : _channelManager(channelManager), _clientManager(clientManager) {}
+JoinCommand::JoinCommand(ChannelManager *channelManager, ClientManager *clientManager, ServerManager *serverManager)
+	: _channelManager(channelManager), _clientManager(clientManager), _serverManager(serverManager) {}
 
 JoinCommand::~JoinCommand() {}
 
 //Methods
 void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) {
-	std::string name = parsedMsg.params[0];
-	RegisteredClient *client = _clientManager->getClientFromFd(client_fd);
+    if (parsedMsg.params.empty()) {
+        std::string errorMsg = ":server 461 JOIN :Not enough parameters\r\n";
+        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+        return;
+    }
 
-	if (_channelManager->getChannelList().find(name) == _channelManager->getChannelList().end()) {
-		if (_channelManager->createChannel(name)) {
-			std::string creationGoodOutput = CREATIONSCCS + name + "\r\n";
-			send(client_fd, creationGoodOutput.c_str(), creationGoodOutput.length(), 0);
-		} else {
-			std::string creationBadOutput = CREATIONERR + name + "\r\n";
-			send(client_fd, creationBadOutput.c_str(), creationBadOutput.length(), 0);
-		}
-	}
+    std::string name = parsedMsg.params[0];
+    if (name[0] != '#') {
+        name = "#" + name;
+    }
 
-	Channel *channel = _channelManager->getChannel(name);
+    RegisteredClient *client = _clientManager->getClientFromFd(client_fd);
+    if (!client) {
+        return;
+    }
 
-	if (channel->getOperators().empty()) {
-		if (channel->addOperator(client)) {
-			std::string operatorGoodMessage = JOINEDOPERATORSCCS + name + "\r\n";
-			send(client_fd, operatorGoodMessage.c_str(), operatorGoodMessage.length(), 0);
-			broadcast(channel, client_fd);
-		} else {
-			std::string operatorBadMessage = JOINEDOPERATORERR + name + "\r\n";
-			send(client_fd, operatorBadMessage.c_str(), operatorBadMessage.length(), 0);
-		}
-	} else {
-		if (channel->addMember(client)) {
-			std::string memberGoodMessage = JOINEDMEMBERSCCS + name + "\r\n";
-			send(client_fd, memberGoodMessage.c_str(), memberGoodMessage.length(), 0);
-			broadcast(channel, client_fd);
-		} else {
-			std::string memberBadMessage = JOINEDMEMBERERR + name + "\r\n";
-			send(client_fd, memberBadMessage.c_str(), memberBadMessage.length(), 0);
-		}
-	}
-}
+    bool isNewChannel = (_channelManager->getChannelList().find(name) == _channelManager->getChannelList().end());
 
-void JoinCommand::broadcast(Channel *channel, int client_fd){
-    std::vector<RegisteredClient*> members = channel->getMembers();
-    std::vector<RegisteredClient*> operators = channel->getOperators();
-    
-    // Broadcasting to all members
-    for (size_t i = 0; i < members.size(); ++i) {
-        RegisteredClient* member = members[i];
-        if (member->getFd() != client_fd) {
-            std::string message = member->getNickname() + " joined the channel!\r\n";
-            send(member->getFd(), message.c_str(), message.length(), 0);
+    if (isNewChannel) {
+        if (!_channelManager->createChannel(name)) {
+            std::string creationBadOutput = ":server 482 " + name + " :Failed to create channel\r\n";
+            send(client_fd, creationBadOutput.c_str(), creationBadOutput.length(), 0);
+            return;
         }
     }
-    
-    // Broadcasting to all operators
-    for (size_t i = 0; i < operators.size(); ++i) {
-        RegisteredClient* operatorClient = operators[i];
-        if (operatorClient->getFd() != client_fd) {
-            std::string message = operatorClient->getNickname() + " joined the channel!\r\n";
-            send(operatorClient->getFd(), message.c_str(), message.length(), 0);
+
+    Channel *channel = _channelManager->getChannel(name);
+    if (!channel) {
+        return;
+    }
+
+    if (channel->getOperators().empty()) {
+        channel->addOperator(client);
+    }
+
+    channel->addMember(client);
+
+    std::string joinReply = ":" + client->getNickname() + " JOIN " + name + "\r\n";
+    send(client_fd, joinReply.c_str(), joinReply.length(), 0);
+
+    std::string nameReply = ":server 353 " + client->getNickname() + " = " + name + " :";
+    for (size_t i = 0; i < channel->getOperators().size(); i++) {
+        nameReply += "@" + channel->getOperators()[i]->getNickname() + " ";
+    }
+    for (size_t i = 0; i < channel->getMembers().size(); i++) {
+        nameReply += channel->getMembers()[i]->getNickname() + " ";
+    }
+    nameReply += "\r\n";
+    send(client_fd, nameReply.c_str(), nameReply.length(), 0);
+
+    // Send End of NAMES list
+    std::string endOfNames = ":server 366 " + client->getNickname() + " " + name + " :End of /NAMES list.\r\n";
+    send(client_fd, endOfNames.c_str(), endOfNames.length(), 0);
+
+    broadcast(channel, client_fd);
+}
+
+void JoinCommand::broadcast(Channel *channel, int client_fd) {
+    RegisteredClient* newClient = _clientManager->getClientFromFd(client_fd);
+    std::string joinMessage = ":" + newClient->getNickname() + " JOIN " + channel->getName() + "\r\n";
+
+    for (size_t i = 0; i < channel->getMembers().size(); ++i) {
+        RegisteredClient* member = channel->getMembers()[i];
+        if (member->getFd() != client_fd) {
+            send(member->getFd(), joinMessage.c_str(), joinMessage.length(), 0);
         }
     }
 }

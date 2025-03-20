@@ -6,17 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 18:42:33 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:30:25 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/commands/CommandManager.hpp"
-#include "../../includes/ChannelManager.hpp"
+#include "../includes/CommandManager.hpp"
+#include "../includes/ChannelManager.hpp"
 
 // Constructor and Destructor
 
 CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *channelManager, ServerManager *serverManager) {
-	_commands["JOIN"] = new JoinCommand(channelManager, clientManager);
+	_commands["JOIN"] = new JoinCommand(channelManager, clientManager, serverManager);
 
 	//! RFC Complient commands (the ones above need rework)
 	_commands["PASS"] = new PassCommand(clientManager);
@@ -26,6 +26,10 @@ CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *cha
 	_commands["POPULATION"] = new PopulationCommand(clientManager);
 	_commands["CHANNELLIST"] = new ChannelListCommand(channelManager);
 	_commands["QUIT"] = new QuitCommand(serverManager, channelManager);
+	_commands["PING"] = new PingCommand();
+	_commands["PONG"] = new PongCommand(clientManager);
+	_commands["PRIVMSG"] = new PrivmsgCommand(channelManager, clientManager);
+	_commands["WHO"] = new WhoCommand(serverManager, channelManager);
 }
 
 CommandManager::~CommandManager() {

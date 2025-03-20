@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:13:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 17:52:41 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:24:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,24 @@ void Channel::setTopic(const std::string &topic) { _topic = topic; }
 void Channel::setName(const std::string &name) { _name = name; }
 
 // Methods
-bool Channel::isMember(RegisteredClient *client){
+bool Channel::isMember(RegisteredClient *client) {
 	for (std::vector<RegisteredClient*>::iterator it = _members.begin(); it != _members.end(); it++) {
+		if ((*it) == client) {
+			return (true);
+		}
+	}
+
+	for (std::vector<RegisteredClient*>::iterator it = _operators.begin(); it != _operators.end(); it++) {
+		if ((*it) == client) {
+			return (true);
+		}
+	}
+
+	return (false);
+}
+
+bool Channel::isOperator(RegisteredClient *client) {
+	for (std::vector<RegisteredClient*>::iterator it = _operators.begin(); it != _operators.end(); it++) {
 		if ((*it) == client) {
 			return (true);
 		}

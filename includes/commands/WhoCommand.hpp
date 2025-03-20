@@ -1,35 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   NickCommand.hpp                                    :+:      :+:    :+:   */
+/*   WhoCommand.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 15:48:18 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 10:46:40 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/03/20 12:17:01 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/20 12:33:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef NICKCOMMAND_HPP
-# define NICKCOMMAND_HPP
+#ifndef WHOCOMMAND_HPP
+# define WHOCOMMAND_HPP
 
-# include <arpa/inet.h>
-# include <netinet/in.h>
+# include <sstream>
 
 # include "ICommand.hpp"
 
-class ClientManager;
+class ServerManager;
+class Clientmanager;
 class ChannelManager;
 class Channel;
 
-class NickCommand : public ICommand {
+class WhoCommand : public ICommand {
 private:
-    ClientManager* _clientManager;
-    ChannelManager * _channelManager;
+	ServerManager *_serverManager;
+	ChannelManager *_channelManager;
+
+	void sendWhoReply(int client_fd, Channel* channel);
 
 public:
-    NickCommand(ClientManager* clientManager, ChannelManager *channelManager) : _clientManager(clientManager), _channelManager(channelManager) {}
-    virtual void executeCommand(int client_fd, const ParsedMessage& msg);
+	WhoCommand(ServerManager *serverManager, ChannelManager * channelManager);
+	~WhoCommand() {}
+
+	void executeCommand(int client_fd, const ParsedMessage& parsedMsg);
 };
 
 #endif
