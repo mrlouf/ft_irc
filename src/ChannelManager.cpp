@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:28:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 18:41:29 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:37:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,25 @@ std::vector<Channel*> ChannelManager::getClientChannels(int client_fd) {
 	return (_clientChannels);
 }
 
+void ChannelManager::removeClientFromAllChannels(RegisteredClient *client) {
+    std::vector<Channel *> channels = getClientChannels(client->getFd());
+
+    for (size_t i = 0; i < channels.size(); i++) {
+        Channel *channel = channels[i];
+
+        if (channel->isOperator(client)) {
+            if (channel->getOperators().size() == 1) {
+                channel->setOperatorsToNoOps();
+            } else {
+                channel->removeOperator(client);
+            }
+        }
+
+        channel->removeMember(client);
+    }
+}
+
+// Testing method
 void ChannelManager::printChannelList(int client_fd){
 	if (_channels.empty()) {
 		std::string response = "No available channels.\r\n";

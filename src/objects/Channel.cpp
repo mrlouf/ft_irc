@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:13:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:24:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:14:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ bool Channel::removeMember(RegisteredClient *client) {
 	return (false);
 }
 
-bool Channel::RemoveOperator(RegisteredClient *oper) {
+bool Channel::removeOperator(RegisteredClient *oper) {
 	std::vector<RegisteredClient*>::iterator it = std::find(_operators.begin(), _operators.end(), oper);
 	if (it != _operators.end()) {
 		_operators.erase(it);
@@ -99,6 +99,10 @@ bool Channel::RemoveOperator(RegisteredClient *oper) {
 	}
 
 	return (false);
+}
+
+void Channel::setOperatorsToNoOps() {
+    _operators.clear();
 }
 
 void Channel::broadcastMessage(const std::string& message, RegisteredClient* sender) {

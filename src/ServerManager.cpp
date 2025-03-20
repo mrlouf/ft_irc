@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 11:41:08 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:48:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ void ServerManager::run() {
         // **PING/PONG Handling**
         time_t currentTime = time(NULL);
         if (currentTime - lastPingCheckTime >= 30) { // Every 30 seconds
+            std::cout << "Sending PING" << std::endl;
             sendPingToClients();
             checkClientTimeouts();
             lastPingCheckTime = currentTime;
@@ -124,20 +125,16 @@ bool ServerManager::readFromClient(int client_fd, std::string &input) {
 }
 
 void ServerManager::disconnectClient(const std::string &nickname, int client_fd) {
-	// Get the client's file descriptor from the registered client map
 	const std::map<std::string, RegisteredClient>& clientList = _clientManager->getRegisteredClients();
 	std::map<std::string, RegisteredClient>::const_iterator it = clientList.find(nickname);
 
 	if (it != clientList.end()) {
-		// Check if the fd matches the one provided
 		if (it->second.getFd() == client_fd) {
-			// Let ClientManager handle the removal from _registeredClients
 			_clientManager->unregisterClient(nickname, client_fd);
 			
 			// Close the socket
 			close(client_fd);
 			
-			// Remove from the poll list
 			for (size_t i = 0; i < _fds.size(); ++i) {
 				if (_fds[i].fd == client_fd) {
 					_fds.erase(_fds.begin() + i);

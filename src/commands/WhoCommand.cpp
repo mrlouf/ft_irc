@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:17:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:33:44 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:37:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void WhoCommand::executeCommand(int client_fd, const ParsedMessage& parsedMsg) {
         return;
     }
 
-    // Send the Who reply for the given channel
     sendWhoReply(client_fd, channel);
 }
 
@@ -45,7 +44,6 @@ void WhoCommand::sendWhoReply(int client_fd, Channel* channel) {
 		std::string modes = (channel->isOperator(member) ? "@" : "");
 		std::string realName = member->getUsername();
 
-		// Using stringstream for time conversion
 		std::stringstream timeStream;
 		timeStream << time(NULL);
 		std::string timeStr = timeStream.str();

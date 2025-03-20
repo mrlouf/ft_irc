@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:07:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:23:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:13:51 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,8 @@ class Channel {
 		bool addMember(RegisteredClient *client);
 		bool addOperator(RegisteredClient *oper);
 		bool removeMember(RegisteredClient *client);
-		bool RemoveOperator(RegisteredClient *oper);
+		bool removeOperator(RegisteredClient *oper);
+		void setOperatorsToNoOps();
 		void broadcastMessage(const std::string& message, RegisteredClient* sender);
 
 };

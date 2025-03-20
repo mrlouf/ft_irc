@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:29:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 17:09:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:37:36 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,10 @@ class ChannelManager {
 		// Methods
 		bool createChannel(const std::string &name);
 		bool removeChannel(const std::string &name);
+		void removeClientFromAllChannels(RegisteredClient *client);
+
+
+		// Testing method
 		void printChannelList(int client_fd);
 };
 
