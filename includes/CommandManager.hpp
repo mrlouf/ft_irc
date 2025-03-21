@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:29:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:49:42 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,17 @@
 # include "commands/UserCommand.hpp"
 # include "commands/CapCommand.hpp"
 # include "commands/PopulationCommand.hpp"
+# include "commands/ChannelListCommand.hpp"
+# include "commands/ChannelModesCommand.hpp"
 # include "commands/QuitCommand.hpp"
 # include "commands/JoinCommand.hpp"
 # include "commands/PingCommand.hpp"
 # include "commands/PongCommand.hpp"
 # include "commands/PrivmsgCommand.hpp"
 # include "commands/WhoCommand.hpp"
-# include "commands/ChannelListCommand.hpp"
+# include "commands/ModeCommand.hpp"
+# include "commands/TopicCommand.hpp"
+
 
 class ServerManager;
 class ChannelManager;

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PRIVMSGCommand.hpp                                 :+:      :+:    :+:   */
+/*   PrivmsgCommand.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 10:40:22 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 10:44:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 16:27:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PRIVMSGCOMMAND_HPP
 
 # include <string>
+# include <sys/socket.h>
 
 # include "ICommand.hpp"
 
@@ -34,6 +35,7 @@ public:
 
 	// Methods
 	virtual void executeCommand(int client_fd, const ParsedMessage& parsedMsg);
+	void sendMessageToUser(const std::string& message, RegisteredClient* recipient, RegisteredClient* sender);
 	void broadcastMessage(const std::string& message, Channel* channel, RegisteredClient* sender);
 };
 

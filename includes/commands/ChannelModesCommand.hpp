@@ -1,36 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   TopicCommand.hpp                                   :+:      :+:    :+:   */
+/*   ChannelModesCommand.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/21 13:43:14 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 14:11:23 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/03/21 10:41:58 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/21 10:53:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TOPICCOMMAND_HPP
-# define TOPICCOMMAND_HPP
+// This is a TESTING command
 
-# include <iostream>
+#ifndef CHANNELMODESCOMMAND_HPP
+# define CHANNELMODESCOMMAND_HPP
 
-# include "../../includes/objects/Channel.hpp"
-# include "../../includes/objects/RegisteredClient.hpp"
+# include <string>
+# include <sys/socket.h>
+
 # include "ICommand.hpp"
 
 class ChannelManager;
-class ClientManager;
 
-class TopicCommand : public ICommand {
+class ChannelModesCommand : public ICommand {
 	private:
 		ChannelManager *_channelManager;
-		ClientManager *_clientManager;
 
 	public:
-    	TopicCommand(ChannelManager *channelManager, ClientManager *clientManager);
+		ChannelModesCommand(ChannelManager *channelManager);
 		void executeCommand(int client_fd, const ParsedMessage &parsedMsg);
-		void broadcast(Channel* channel, const std::string& message);
 };
 
 #endif

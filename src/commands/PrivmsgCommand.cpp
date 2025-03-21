@@ -1,53 +1,61 @@
 #include "../../includes/commands/PrivmsgCommand.hpp"
-#include "../../includes/ChannelManager.hpp"
 #include "../../includes/ClientManager.hpp"
+#include "../../includes/ChannelManager.hpp"
 
-// Constructor
-PrivmsgCommand::PrivmsgCommand(ChannelManager* channelManager, ClientManager* clientManager) 
-    : _channelManager(channelManager), _clientManager(clientManager) {}
+// Constructor and Destructor
+PrivmsgCommand::PrivmsgCommand(ChannelManager* channelManager, ClientManager* clientManager): _channelManager(channelManager), _clientManager(clientManager) {}
 
-// Destructor
 PrivmsgCommand::~PrivmsgCommand() {}
 
-// Execute the PRIVMSG command
+// Methods
 void PrivmsgCommand::executeCommand(int client_fd, const ParsedMessage& parsedMsg) {
-    //!Erase this before turning in
-    std::cout << "arrived at privmsg command" << std::endl;
+	if (parsedMsg.params.size() < 2) {
+		std::string errorMsg = "ERROR: PRIVMSG requires a target and a message\r\n";
+		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
 
-    if (parsedMsg.params.size() < 2) {
-        std::string errorMsg = "ERROR: PRIVMSG requires a channel and message\r\n";
-        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+	std::string target = parsedMsg.params[0];
+	std::string message = parsedMsg.params[1];
 
-    std::string channelName = parsedMsg.params[0];
-    std::string message = parsedMsg.params[1];
+	RegisteredClient* sender = _clientManager->getClientFromFd(client_fd);
+	if (!sender) {
+		std::string errorMsg = "ERROR: You must be a registered client to send messages\r\n";
+		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
 
-    // Find the client by FD
-    RegisteredClient* client = _clientManager->getClientFromFd(client_fd);
-    if (!client) {
-        std::string errorMsg = "ERROR: You must be a registered client to send messages\r\n";
-        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+	if (target[0] == '#') {
+		Channel* channel = _channelManager->getChannel(target);
+		if (!channel) {
+			std::string errorMsg = "ERROR: No such channel: " + target + "\r\n";
+			send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+			return;
+		}
 
-    // Find the channel
-    Channel* channel = _channelManager->getChannel(channelName);
-    if (!channel) {
-        std::string errorMsg = "ERROR: No such channel: " + channelName + "\r\n";
-        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+		if (!channel->isMember(sender)) {
+			std::string errorMsg = "ERROR: You must join the channel before sending messages\r\n";
+			send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+			return;
+		}
 
-    // Ensure client is a member of the channel
-    if (!channel->isMember(client)) {
-        std::string errorMsg = "ERROR: You must join the channel before sending messages\r\n";
-        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+		broadcastMessage(message, channel, sender);
+	} else {
+		RegisteredClient* recipient = _clientManager->getClientFromNickname(target);
+		if (!recipient) {
+			std::string errorMsg = "ERROR: No such user: " + target + "\r\n";
+			send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+			return;
+		}
 
-    // Broadcast the message to other members
-    broadcastMessage(message, channel, client);
+		sendMessageToUser(message, recipient, sender);
+	}
+}
+
+void PrivmsgCommand::sendMessageToUser(const std::string& message, RegisteredClient* recipient, RegisteredClient* sender) {
+    std::string formattedMessage = ":" + sender->getNickname() + " PRIVMSG " + recipient->getNickname() + " :" + message + "\r\n";
+
+    send(recipient->getFd(), formattedMessage.c_str(), formattedMessage.length(), 0);
 }
 
 // Helper method to broadcast the message to all channel members

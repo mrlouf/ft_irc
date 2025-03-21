@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:33:55 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:15:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/21 11:14:39 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,61 +33,79 @@ JoinCommand::~JoinCommand() {}
 
 //Methods
 void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) {
-    if (parsedMsg.params.empty()) {
-        std::string errorMsg = ":server 461 JOIN :Not enough parameters\r\n";
-        send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
-        return;
-    }
+	if (parsedMsg.params.empty()) {
+		std::string errorMsg = ":server 461 JOIN :Not enough parameters\r\n";
+		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
 
-    std::string name = parsedMsg.params[0];
-    if (name[0] != '#') {
-        name = "#" + name;
-    }
+	std::string name = parsedMsg.params[0];
+	std::string password = (parsedMsg.params.size() > 1) ? parsedMsg.params[1] : "";
 
-    RegisteredClient *client = _clientManager->getClientFromFd(client_fd);
-    if (!client) {
-        return;
-    }
+	if (name[0] != '#') {
+		name = "#" + name;
+	}
 
-    bool isNewChannel = (_channelManager->getChannelList().find(name) == _channelManager->getChannelList().end());
+	RegisteredClient *client = _clientManager->getClientFromFd(client_fd);
+	if (!client) {
+		return;
+	}
 
-    if (isNewChannel) {
-        if (!_channelManager->createChannel(name)) {
-            std::string creationBadOutput = ":server 482 " + name + " :Failed to create channel\r\n";
-            send(client_fd, creationBadOutput.c_str(), creationBadOutput.length(), 0);
-            return;
-        }
-    }
+	bool isNewChannel = (_channelManager->getChannelList().find(name) == _channelManager->getChannelList().end());
 
-    Channel *channel = _channelManager->getChannel(name);
-    if (!channel) {
-        return;
-    }
+	if (isNewChannel) {
+		if (!_channelManager->createChannel(name)) {
+			std::string creationBadOutput = ":server 482 " + name + " :Failed to create channel\r\n";
+			send(client_fd, creationBadOutput.c_str(), creationBadOutput.length(), 0);
+			return;
+		}
+	}
 
-    if (channel->getOperators().empty()) {
-        channel->addOperator(client);
-    }
+	Channel *channel = _channelManager->getChannel(name);
+	if (!channel) {
+		return;
+	}
 
-    channel->addMember(client);
+	if (!channel->canJoin(client, password)) {
+		std::string errorMsg;
+		
+		if (channel->hasMode('k')) {
+			errorMsg = ":server 475 " + client->getNickname() + " " + name + " :Cannot join channel (+k)\r\n";
+		}
+		else if (channel->hasMode('l') && channel->isFull()) {
+			errorMsg = ":server 471 " + client->getNickname() + " " + name + " :Cannot join channel (+l)\r\n";
+		}
+		else {
+			errorMsg = ":server 474 " + client->getNickname() + " " + name + " :Cannot join channel\r\n";
+		}
+		
+		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
 
-    std::string joinReply = ":" + client->getNickname() + " JOIN " + name + "\r\n";
-    send(client_fd, joinReply.c_str(), joinReply.length(), 0);
+	if (channel->getOperators().empty()) {
+		channel->addOperator(client);
+	}
 
-    std::string nameReply = ":server 353 " + client->getNickname() + " = " + name + " :";
-    for (size_t i = 0; i < channel->getOperators().size(); i++) {
-        nameReply += "@" + channel->getOperators()[i]->getNickname() + " ";
-    }
-    for (size_t i = 0; i < channel->getMembers().size(); i++) {
-        nameReply += channel->getMembers()[i]->getNickname() + " ";
-    }
-    nameReply += "\r\n";
-    send(client_fd, nameReply.c_str(), nameReply.length(), 0);
+	channel->addMember(client);
 
-    // Send End of NAMES list
-    std::string endOfNames = ":server 366 " + client->getNickname() + " " + name + " :End of /NAMES list.\r\n";
-    send(client_fd, endOfNames.c_str(), endOfNames.length(), 0);
+	std::string joinReply = ":" + client->getNickname() + " JOIN " + name + "\r\n";
+	send(client_fd, joinReply.c_str(), joinReply.length(), 0);
 
-    broadcast(channel, client_fd);
+	std::string nameReply = ":server 353 " + client->getNickname() + " = " + name + " :";
+	for (size_t i = 0; i < channel->getOperators().size(); i++) {
+		nameReply += "@" + channel->getOperators()[i]->getNickname() + " ";
+	}
+	for (size_t i = 0; i < channel->getMembers().size(); i++) {
+		nameReply += channel->getMembers()[i]->getNickname() + " ";
+	}
+	nameReply += "\r\n";
+	send(client_fd, nameReply.c_str(), nameReply.length(), 0);
+
+	std::string endOfNames = ":server 366 " + client->getNickname() + " " + name + " :End of /NAMES list.\r\n";
+	send(client_fd, endOfNames.c_str(), endOfNames.length(), 0);
+
+	broadcast(channel, client_fd);
 }
 
 void JoinCommand::broadcast(Channel *channel, int client_fd) {

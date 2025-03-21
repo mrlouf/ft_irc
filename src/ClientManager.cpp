@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:20:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 17:46:43 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:27:14 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,17 +64,15 @@ bool ClientManager::registerClient(const std::string &nickname, const std::strin
 }
 
 void ClientManager::setClientOffline(int fd) {
-    // Iterate through the map to find the client with the matching fd
     for (std::map<std::string, RegisteredClient>::iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
         if (it->second.getFd() == fd) {
             std::cout << "Setting client offline: " << it->first << " (fd: " << fd << ")" << std::endl;
-            it->second.setFd(-1); // Set fd to -1 to indicate offline status
+            it->second.setFd(-1);
             it->second.setOnline(false);
             break ;
         }
     }
 
-    //Clear the fd from the register map
     std::map<int, RegisteredClient>::iterator it = _registeredFds.find(fd);
     if (it != _registeredFds.end()) {
         _registeredFds.erase(it);
@@ -83,17 +81,14 @@ void ClientManager::setClientOffline(int fd) {
 
 bool ClientManager::reconnectClient(const std::string& nickname, int new_fd) {
     if (_registeredClients.find(nickname) != _registeredClients.end()) {
-        // Check if this client is already online with a different fd
         if (_registeredClients[nickname].isOnline() && _registeredClients[nickname].getFd() != -1) {
             std::cerr << "Client " << nickname << " is already connected with a different fd." << std::endl;
             return false;
         }
-        
-        // Update the fd and set online status
+
         _registeredClients[nickname].setFd(new_fd);
         _registeredClients[nickname].setOnline(true);
 
-        //Reassign fds if necessary
         if (_registeredFds.find(new_fd) != _registeredFds.end()) {
             _registeredFds[new_fd] = _registeredClients[nickname];
         } else {
@@ -113,13 +108,11 @@ void ClientManager::unregisterClient(const std::string &nickname, int client_fd)
         int fd = it->second.getFd();
         //TODO: remove client from channels
         
-        // Remove from the FD-based map first
         std::map<int, RegisteredClient>::iterator fdIt = _registeredFds.find(fd);
         if (fdIt != _registeredFds.end()) {
             _registeredFds.erase(fdIt);
         }
 
-        // Remove from the nickname-based map
         _registeredClients.erase(it);
     }
 }
@@ -151,22 +144,18 @@ void ClientManager::completePendingRegistration(int fd) {
         std::string nickname = _pendingNicknames[fd];
         std::string username = _pendingUsernames[fd];
         
-        // Verify password
         if (password != _password) {
             std::cout << "Password verification failed for fd: " << fd << std::endl;
             return;
         }
         
-        // Check if nickname is already registered
         if (isNicknameRegistered(nickname)) {
             std::cout << "Nickname already registered: " << nickname << std::endl;
             return;
         }
         
-        // Register the client
         registerClient(nickname, username, fd);
         
-        // Clean up pending maps
         clearPendingRegistration(fd);
         
         std::cout << "Registration complete for fd: " << fd << std::endl;
@@ -200,7 +189,7 @@ std::string ClientManager::getPendingNickname(int fd) {
     return "";
 }
 
-//! Testing stuff
+// Testing methods
 void ClientManager::printClientList(const int &client_fd) const {
     for (std::map<std::string, RegisteredClient>::const_iterator it = _registeredClients.begin(); it != _registeredClients.end(); ++it) {
 		std::string status = it->second.isOnline() ? "online" : "offline";

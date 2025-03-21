@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:30:25 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:59:01 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,20 @@
 // Constructor and Destructor
 
 CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *channelManager, ServerManager *serverManager) {
-	_commands["JOIN"] = new JoinCommand(channelManager, clientManager, serverManager);
-
-	//! RFC Complient commands (the ones above need rework)
 	_commands["PASS"] = new PassCommand(clientManager);
 	_commands["NICK"] = new NickCommand(clientManager, channelManager);
 	_commands["USER"] = new UserCommand(clientManager, serverManager);
 	_commands["CAP"] = new CapCommand();
 	_commands["POPULATION"] = new PopulationCommand(clientManager);
 	_commands["CHANNELLIST"] = new ChannelListCommand(channelManager);
+	_commands["CHANNELMODES"] = new ChannelModesCommand(channelManager);
 	_commands["QUIT"] = new QuitCommand(serverManager, channelManager);
 	_commands["PING"] = new PingCommand();
 	_commands["PONG"] = new PongCommand(clientManager);
+	_commands["JOIN"] = new JoinCommand(channelManager, clientManager, serverManager);
 	_commands["PRIVMSG"] = new PrivmsgCommand(channelManager, clientManager);
+	_commands["MODE"] = new ModeCommand(channelManager, clientManager);
+	_commands["TOPIC"] = new TopicCommand(channelManager, clientManager);
 	_commands["WHO"] = new WhoCommand(serverManager, channelManager);
 }
 
