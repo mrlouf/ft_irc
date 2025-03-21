@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/17 15:32:11 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:28:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,30 +14,42 @@
 # define REGISTEREDCLIENT_HPP
 
 # include <string>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <unistd.h>
 
 class RegisteredClient {
-private:
-    int _fd;
-    std::string _nickname;
-    std::string _username;
-    bool _online;
+	private:
+		int _fd;
+		std::string _nickname;
+		std::string _username;
+		bool _online;
+		time_t _lastPingTime;
+		time_t _lastPongTime;
 
-public:
-    RegisteredClient();
-    RegisteredClient(int fd, const std::string &nickname, const std::string &username);
-    ~RegisteredClient();
+	public:
+		RegisteredClient();
+		RegisteredClient(int fd, const std::string &nickname, const std::string &username);
+		~RegisteredClient();
 
-    // Getters
-    int getFd() const;
-    const std::string &getNickname() const;
-    const std::string &getUsername() const;
-    bool isOnline() const;
+		// Getters and Setters
+		int getFd() const;
+		const std::string &getNickname() const;
+		const std::string &getUsername() const;
+		bool isOnline() const;
+		void setLastPingTime(time_t time);
+		void setLastPongTime(time_t time);
 
-    // Setters
-    void setFd(int fd);
-    void setNickname(const std::string &nickname);
-    void setUsername(const std::string &username);
-    void setOnline(bool status);
+		void setFd(int fd);
+		void setNickname(const std::string &nickname);
+		void setUsername(const std::string &username);
+		void setOnline(bool status);
+		time_t getLastPingTime() const;
+		time_t getLastPongTime() const;
+		
+		//Methods
+		std::string getHost() const;
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:09:10 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:21:38 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:51:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ ChannelListCommand::ChannelListCommand(ChannelManager *ChannelManager) : _channe
 void ChannelListCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) {
 	(void)parsedMsg;
 
-	std::string response = "Channels currently available:\n";
+	std::string response = "Channels currently available:\r\n";
 	send(client_fd, response.c_str(), response.length(), 0);
 	_channelManager->printChannelList(client_fd);
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:17:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 17:23:09 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:32:15 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ RegisteredClient::RegisteredClient(int fd, const std::string &nickname, const st
 
 RegisteredClient::~RegisteredClient() {}
 
-// Getters
+// Getters and Setters
 int RegisteredClient::getFd() const {
     return _fd;
 }
@@ -36,7 +36,6 @@ bool RegisteredClient::isOnline() const {
     return _online;
 }
 
-// Setters
 void RegisteredClient::setFd(int fd) {
     _fd = fd;
 }
@@ -51,4 +50,34 @@ void RegisteredClient::setUsername(const std::string &username) {
 
 void RegisteredClient::setOnline(bool status) {
     _online = status;
+}
+
+void RegisteredClient::setLastPingTime(time_t time) {
+    _lastPingTime = time;
+}
+
+void RegisteredClient::setLastPongTime(time_t time) {
+    _lastPongTime = time;
+}
+
+time_t RegisteredClient::getLastPingTime() const {
+    return _lastPingTime;
+}
+
+time_t RegisteredClient::getLastPongTime() const {
+    return _lastPongTime;
+}
+
+//Methods
+std::string RegisteredClient::getHost() const {
+	struct sockaddr_in addr;
+	socklen_t addr_len = sizeof(addr);
+
+	if (getpeername(_fd, (struct sockaddr*)&addr, &addr_len) == -1) {
+		return "UNKNOWN"; 
+	}
+
+	const char *ipStr = inet_ntoa(addr.sin_addr);
+
+	return std::string(ipStr);
 }
