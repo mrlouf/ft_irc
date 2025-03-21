@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:48:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/21 09:23:23 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ void ServerManager::disconnectClient(const std::string &nickname, int client_fd)
 
 	if (it != clientList.end()) {
 		if (it->second.getFd() == client_fd) {
+            std::cout << "Client " << nickname << " disconnected." << std::endl;
 			_clientManager->unregisterClient(nickname, client_fd);
 			
 			// Close the socket
@@ -141,8 +142,6 @@ void ServerManager::disconnectClient(const std::string &nickname, int client_fd)
 					break;
 				}
 			}
-
-			std::cout << "Client " << nickname << " disconnected." << std::endl;
 		} else {
 			std::cerr << "Provided fd does not match the client's registered fd." << std::endl;
 		}
@@ -174,10 +173,12 @@ void ServerManager::checkClientTimeouts() {
 		std::map<int, RegisteredClient>::iterator next = it;
 		++next;
 
-		if (now - it->second.getLastPongTime() > 90) {  // No response within 90s
+		// TODO: handle reconnections, maybe with a second layer of time out
+        if (now - it->second.getLastPongTime() > 90) {
 			std::cout << "Client " << it->second.getNickname() << " timed out.\n";
-			disconnectClient(it->second.getNickname(), it->first);
-			clients.erase(it);
+			_commandManager->executeCommand(it->second.getFd(), "QUIT :timed out");
+            //disconnectClient(it->second.getNickname(), it->first);
+			//clients.erase(it);
 		}
 		it = next;
 	}

@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/20 12:30:34 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/21 14:24:57 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,11 +51,14 @@ SRC         := src/main.cpp \
 				src/commands/CapCommand.cpp \
 				src/commands/PopulationCommand.cpp \
 				src/commands/ChannelListCommand.cpp \
+				src/commands/ChannelModesCommand.cpp \
 				src/commands/QuitCommand.cpp \
 				src/commands/JoinCommand.cpp \
 				src/commands/PingCommand.cpp \
 				src/commands/PongCommand.cpp \
 				src/commands/PrivmsgCommand.cpp \
+				src/commands/ModeCommand.cpp \
+				src/commands/TopicCommand.cpp \
 				src/commands/WhoCommand.cpp \
 
 OBJS        = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
