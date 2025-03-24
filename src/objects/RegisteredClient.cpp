@@ -1,0 +1,83 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   RegisteredClient.cpp                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/17 09:17:54 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/20 12:32:15 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/objects/RegisteredClient.hpp"
+
+RegisteredClient::RegisteredClient() : _fd(-1), _nickname(""), _username(""), _online(false) {}
+
+RegisteredClient::RegisteredClient(int fd, const std::string &nickname, const std::string &username) 
+    : _fd(fd), _nickname(nickname), _username(username), _online(true) {}
+
+RegisteredClient::~RegisteredClient() {}
+
+// Getters and Setters
+int RegisteredClient::getFd() const {
+    return _fd;
+}
+
+const std::string &RegisteredClient::getNickname() const {
+    return _nickname;
+}
+
+const std::string &RegisteredClient::getUsername() const {
+    return _username;
+}
+
+bool RegisteredClient::isOnline() const {
+    return _online;
+}
+
+void RegisteredClient::setFd(int fd) {
+    _fd = fd;
+}
+
+void RegisteredClient::setNickname(const std::string &nickname) {
+    _nickname = nickname;
+}
+
+void RegisteredClient::setUsername(const std::string &username) {
+    _username = username;
+}
+
+void RegisteredClient::setOnline(bool status) {
+    _online = status;
+}
+
+void RegisteredClient::setLastPingTime(time_t time) {
+    _lastPingTime = time;
+}
+
+void RegisteredClient::setLastPongTime(time_t time) {
+    _lastPongTime = time;
+}
+
+time_t RegisteredClient::getLastPingTime() const {
+    return _lastPingTime;
+}
+
+time_t RegisteredClient::getLastPongTime() const {
+    return _lastPongTime;
+}
+
+//Methods
+std::string RegisteredClient::getHost() const {
+	struct sockaddr_in addr;
+	socklen_t addr_len = sizeof(addr);
+
+	if (getpeername(_fd, (struct sockaddr*)&addr, &addr_len) == -1) {
+		return "UNKNOWN"; 
+	}
+
+	const char *ipStr = inet_ntoa(addr.sin_addr);
+
+	return std::string(ipStr);
+}
