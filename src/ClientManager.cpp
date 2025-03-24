@@ -6,15 +6,17 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:20:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 14:27:14 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:04:28 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../includes/ServerManager.hpp"
 #include "../includes/ClientManager.hpp"
+#include "../includes/ChannelManager.hpp"
 #include "../includes/objects/Channel.hpp"
 
 // Constructor and destructor
-ClientManager::ClientManager(const std::string &password): _password(password) {}
+ClientManager::ClientManager(const std::string &password, ServerManager *serverManager): _password(password), _serverManager(serverManager) {}
 
 ClientManager::~ClientManager() {}
 
@@ -107,6 +109,11 @@ void ClientManager::unregisterClient(const std::string &nickname, int client_fd)
     if (it != _registeredClients.end()) {
         int fd = it->second.getFd();
         //TODO: remove client from channels
+        
+        ChannelManager *channelManager = _serverManager->getChannelManager();
+        if (channelManager) {
+            channelManager->removeClientFromAllInviteLists(getClientFromFd(client_fd));
+        }
         
         std::map<int, RegisteredClient>::iterator fdIt = _registeredFds.find(fd);
         if (fdIt != _registeredFds.end()) {

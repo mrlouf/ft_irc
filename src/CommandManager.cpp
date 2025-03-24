@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 13:59:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:39:58 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *cha
 	_commands["MODE"] = new ModeCommand(channelManager, clientManager);
 	_commands["TOPIC"] = new TopicCommand(channelManager, clientManager);
 	_commands["WHO"] = new WhoCommand(serverManager, channelManager);
+	_commands["INVITE"] = new InviteCommand(channelManager, clientManager);
+	_commands["KICK"] = new KickCommand(channelManager, clientManager);
 }
 
 CommandManager::~CommandManager() {
