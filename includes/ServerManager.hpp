@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:07:50 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 11:41:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 09:58:57 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ class ServerManager {
 
 		// Getters
 		ClientManager *getClientManager();
+		ChannelManager *getChannelManager();
 		std::string &getServerName();
 
 		//Methods

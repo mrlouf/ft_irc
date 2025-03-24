@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:13:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 14:03:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:13:27 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 Channel::Channel() {}
 
 Channel::Channel(const std::string &name)
-: _name(name), _topic(""), _password(""), _userLimit(-1), _inviteOnlySet(false), _topicRestrictedSet(true) {}
+: _name(name), _topic(""), _password(""), _userLimit(-1), _inviteOnlySet(false), _topicRestrictedSet(true), _invitedClients() {}
 
 Channel::~Channel() {}
 
@@ -32,19 +32,19 @@ void Channel::setName(const std::string &name) { _name = name; }
 
 // Methods
 bool Channel::isMember(RegisteredClient *client) {
-	for (std::vector<RegisteredClient*>::iterator it = _members.begin(); it != _members.end(); it++) {
-		if ((*it) == client) {
-			return (true);
-		}
-	}
+    for (std::vector<RegisteredClient*>::iterator it = _members.begin(); it != _members.end(); it++) {
+        if ((*it) == client || (*it)->getNickname() == client->getNickname()) {
+            return (true);
+        }
+    }
 
-	for (std::vector<RegisteredClient*>::iterator it = _operators.begin(); it != _operators.end(); it++) {
-		if ((*it) == client) {
-			return (true);
-		}
-	}
+    for (std::vector<RegisteredClient*>::iterator it = _operators.begin(); it != _operators.end(); it++) {
+        if ((*it) == client || (*it)->getNickname() == client->getNickname()) {
+            return (true);
+        }
+    }
 
-	return (false);
+    return (false);
 }
 
 bool Channel::isOperator(RegisteredClient *client) {
@@ -77,13 +77,13 @@ bool Channel::addOperator(RegisteredClient *oper) {
 }
 
 bool Channel::removeMember(RegisteredClient *client) {
-	std::vector<RegisteredClient*>::iterator it = std::find(_members.begin(), _members.end(), client);
-	if (it != _members.end()) {
-		_members.erase(it);
-		return (true);
-	}
-
-	return (false);
+    for (std::vector<RegisteredClient*>::iterator it = _members.begin(); it != _members.end(); ++it) {
+        if ((*it)->getNickname() == client->getNickname()) {
+            _members.erase(it);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Channel::removeOperator(RegisteredClient *oper) {
@@ -194,7 +194,6 @@ std::string Channel::getModeString() const {
 }
 
 bool Channel::canJoin(const RegisteredClient *client, const std::string &password) const{
-	// TODO: check ban and invitation list when those are implemented;
 	(void)client;
 	if (hasMode('k') && password != _password) {
 		return (false);
@@ -203,4 +202,44 @@ bool Channel::canJoin(const RegisteredClient *client, const std::string &passwor
 		return (false);
 	}
 	return (true);
+}
+
+// INVITE related methods
+void Channel::inviteClient(RegisteredClient *client) {
+	if (!isInvited(client)) {
+		_invitedClients.push_back(client);
+	}
+}
+
+bool Channel::isInvited(RegisteredClient *client) const {
+    for (std::vector<RegisteredClient*>::const_iterator it = _invitedClients.begin(); 
+         it != _invitedClients.end(); ++it) {
+        if (*it == client || ((*it) && client && (*it)->getNickname() == client->getNickname())) {
+            return true;
+        }
+    }
+    
+    std::cout << "Checking if " << client->getNickname() << " is invited: no" 
+              << " (invited list size: " << _invitedClients.size() << ")" << std::endl;
+    
+    return false;
+}
+
+void Channel::removeInvitation(RegisteredClient *client) {
+    if (!client) return;
+    
+    std::vector<RegisteredClient*>::iterator it = std::find(
+        _invitedClients.begin(), _invitedClients.end(), client);
+    
+    if (it == _invitedClients.end()) {
+        for (it = _invitedClients.begin(); it != _invitedClients.end(); ++it) {
+            if ((*it) && (*it)->getNickname() == client->getNickname()) {
+                break;
+            }
+        }
+    }
+    
+    if (it != _invitedClients.end()) {
+        _invitedClients.erase(it);
+    }
 }

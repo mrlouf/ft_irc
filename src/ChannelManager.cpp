@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:28:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 12:17:05 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:20:13 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,13 @@ void ChannelManager::removeClientFromAllChannels(RegisteredClient *client) {
         }
 
         channel->removeMember(client);
+    }
+}
+
+void ChannelManager::removeClientFromAllInviteLists(RegisteredClient* client) {
+    for (std::map<std::string, Channel>::iterator it = _channels.begin(); 
+         it != _channels.end(); ++it) {
+        it->second.removeInvitation(client);
     }
 }
 

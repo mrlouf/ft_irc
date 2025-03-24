@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:33:55 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 11:14:39 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:15:24 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,18 @@ void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) 
 		return;
 	}
 
+	std::cout << "Join attempt by: " << client->getNickname() 
+		<< " for channel: " << name 
+		<< " - isInviteOnly: " << (channel->isInviteOnly() ? "true" : "false")
+		<< " - isInvited: " << (channel->isInvited(client) ? "true" : "false") 
+		<< std::endl;
+
+	if (channel->isInviteOnly() && !channel->isInvited(client)) {
+		std::string errorMsg = ":server 473 " + client->getNickname() + " " + name + " :Cannot join channel (+i) - Invitation required\r\n";
+		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
+		return;
+	}
+
 	if (!channel->canJoin(client, password)) {
 		std::string errorMsg;
 		
@@ -89,6 +101,8 @@ void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) 
 
 	channel->addMember(client);
 
+	channel->removeInvitation(client);
+
 	std::string joinReply = ":" + client->getNickname() + " JOIN " + name + "\r\n";
 	send(client_fd, joinReply.c_str(), joinReply.length(), 0);
 
@@ -109,13 +123,13 @@ void JoinCommand::executeCommand(int client_fd, const ParsedMessage &parsedMsg) 
 }
 
 void JoinCommand::broadcast(Channel *channel, int client_fd) {
-    RegisteredClient* newClient = _clientManager->getClientFromFd(client_fd);
-    std::string joinMessage = ":" + newClient->getNickname() + " JOIN " + channel->getName() + "\r\n";
+	RegisteredClient* newClient = _clientManager->getClientFromFd(client_fd);
+	std::string joinMessage = ":" + newClient->getNickname() + " JOIN " + channel->getName() + "\r\n";
 
-    for (size_t i = 0; i < channel->getMembers().size(); ++i) {
-        RegisteredClient* member = channel->getMembers()[i];
-        if (member->getFd() != client_fd) {
-            send(member->getFd(), joinMessage.c_str(), joinMessage.length(), 0);
-        }
-    }
+	for (size_t i = 0; i < channel->getMembers().size(); ++i) {
+		RegisteredClient* member = channel->getMembers()[i];
+		if (member->getFd() != client_fd) {
+			send(member->getFd(), joinMessage.c_str(), joinMessage.length(), 0);
+		}
+	}
 }

@@ -6,13 +6,14 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:07:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 12:27:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:06:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
+# include <iostream>
 # include <vector>
 # include <string>
 # include <map>
@@ -38,6 +39,8 @@ class Channel {
 		std::vector<RegisteredClient*> _members;
 		std::vector<RegisteredClient*> _operators;
 		std::set<char> _modes;
+
+		std::vector<RegisteredClient*> _invitedClients;
 
 	public:
 		// Constructor and Destructor
@@ -80,6 +83,11 @@ class Channel {
 		void clearTopicRestriction();
 		std::string getModeString() const;
 		bool canJoin(const RegisteredClient *client, const std::string &password) const;
+
+		// INVITE related methods
+		void inviteClient(RegisteredClient *client);
+		bool isInvited(RegisteredClient *client) const;
+		void removeInvitation(RegisteredClient *client);
 };
 
 #endif

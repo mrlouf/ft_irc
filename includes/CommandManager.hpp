@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/21 13:49:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:39:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@
 # include "commands/WhoCommand.hpp"
 # include "commands/ModeCommand.hpp"
 # include "commands/TopicCommand.hpp"
+# include "commands/InviteCommand.hpp"
+# include "commands/KickCommand.hpp"
 
 
 class ServerManager;

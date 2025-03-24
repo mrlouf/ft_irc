@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/21 14:24:57 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/24 10:38:17 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,6 +60,8 @@ SRC         := src/main.cpp \
 				src/commands/ModeCommand.cpp \
 				src/commands/TopicCommand.cpp \
 				src/commands/WhoCommand.cpp \
+				src/commands/InviteCommand.cpp \
+				src/commands/KickCommand.cpp \
 
 OBJS        = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 DEPS        = $(addprefix $(DEP_DIR)/, $(SRC:.cpp=.d))
