@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:28:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:56:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 class RegisteredClient {
 	private:
+		std::string _buffer;
 		int _fd;
 		std::string _nickname;
 		std::string _username;
@@ -47,9 +48,12 @@ class RegisteredClient {
 		void setOnline(bool status);
 		time_t getLastPingTime() const;
 		time_t getLastPongTime() const;
+		std::string &getBuffer();
 		
 		//Methods
 		std::string getHost() const;
+		void appendToBuffer(const std::string& data);
+    	
 };
 
 #endif

@@ -25,6 +25,10 @@ void PrivmsgCommand::executeCommand(int client_fd, const ParsedMessage& parsedMs
 		return;
 	}
 
+	if (message.find("DCC SEND") == 0) {
+		std::cout << "📁 DCC SEND request detected from " << sender->getNickname() << " to " << target << ": " << message << std::endl;
+	}
+
 	if (target[0] == '#') {
 		Channel* channel = _channelManager->getChannel(target);
 		if (!channel) {
