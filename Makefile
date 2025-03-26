@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/24 10:38:17 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/26 15:41:20 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ NAME        := ./ircserv
 # -=-=-=-=-    FLAG -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 CPP          = c++
-FLAGS       = -Werror -Wall -Wextra -std=c++98 -pedantic -g -fsanitize=address
+FLAGS       = -Werror -Wall -Wextra -std=c++98 -pedantic -g #-fsanitize=address
 DEPFLAGS    = -MMD -MP
 
 # -=-=-=-=-    PATH -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -43,6 +43,7 @@ SRC         := src/main.cpp \
 				src/ClientManager.cpp \
 				src/ChannelManager.cpp \
 				src/CommandManager.cpp \
+				src/objects/ClientBuffer.cpp \
 				src/objects/RegisteredClient.cpp \
 				src/objects/Channel.cpp \
 				src/commands/PassCommand.cpp \

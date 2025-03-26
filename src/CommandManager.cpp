@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 10:39:58 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:58:34 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ ParsedMessage CommandManager::parseInput(const std::string &input){
 	return parsedMsg;
 }
 
-void CommandManager::executeCommand(int client_fd, const std::string& input) {
+void CommandManager::executeCommand(int client_fd, const std::string &input) {
+	std::cout << "fd:" << client_fd << std::endl;
 	std::istringstream stream(input);
 	std::string line;
 

@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/25 14:29:01 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:51:35 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,13 +70,16 @@ void ServerManager::run() {
                     struct pollfd client_poll_fd = {client_fd, POLLIN | POLLHUP, 0};
                     _fds.push_back(client_poll_fd);
                     
+                    ClientBuffer *clientBuffer = new ClientBuffer(client_fd);
+                    addClientBuffer(client_fd, clientBuffer);
+
                     RegisteredClient* client = _clientManager->getClientFromFd(client_fd);
                     if (client)
                         client->setLastPongTime(time(NULL));
                 }
             } else if (_fds[i].revents & POLLIN) {
                 std::string input;
-                if (!readFromClient(_fds[i].fd, input)) {
+                if (!readFromClient(_fds[i].fd, input) && getClientBufferFromFd(_fds[i].fd)->getBuffer().empty()) {
                     std::cout << "Client disconnected (fd: " << _fds[i].fd << ")" << std::endl;
                     _clientManager->setClientOffline(_fds[i].fd);
                     _clientManager->clearPendingRegistration(_fds[i].fd);
@@ -114,15 +117,28 @@ bool ServerManager::readFromClient(int client_fd, std::string &input) {
     if (bytes_read <= 0) {
         return false;
     }
-    
+
     buffer[bytes_read] = '\0';
-    input = buffer;
+    std::string tmpBuffer = buffer;
     
-    if (input.length() >= 2 && input[input.length() - 2] == '\r' && input[input.length() - 1] == '\n') {
-        input = input.substr(0, input.length() - 2);
+    if (tmpBuffer.length() >= 2 && tmpBuffer[tmpBuffer.length() - 2] == '\r' && tmpBuffer[tmpBuffer.length() - 1] == '\n') {
+        if (!getClientBufferFromFd(client_fd)->getBuffer().empty()) {
+            input = getClientBufferFromFd(client_fd)->getBuffer();
+        }
+        input += tmpBuffer.substr(0, tmpBuffer.length() - 2);
+        getClientBufferFromFd(client_fd)->getBuffer().erase();
     }
-    else if (input.length() >= 1 && input[input.length() - 1] == '\n') {
-        input = input.substr(0, input.length() - 1);
+    else if (tmpBuffer.length() >= 1 && tmpBuffer[tmpBuffer.length() - 1] == '\n') {
+        if (!getClientBufferFromFd(client_fd)->getBuffer().empty()) {
+            input = getClientBufferFromFd(client_fd)->getBuffer();
+        }
+        input += tmpBuffer.substr(0, tmpBuffer.length() - 1);
+        getClientBufferFromFd(client_fd)->getBuffer().erase();
+    }
+    else {
+        getClientBufferFromFd(client_fd)->appendToBuffer(buffer);
+        input.erase();
+        return (false);
     }
     
     return true;
@@ -146,6 +162,12 @@ void ServerManager::disconnectClient(const std::string &nickname, int client_fd)
 					break;
 				}
 			}
+
+            ClientBuffer *clientBuffer = getClientBufferFromFd(client_fd);
+            if (clientBuffer) {
+                _clientBuffers.erase(client_fd);
+                delete clientBuffer;
+            }
 		} else {
 			std::cerr << "Provided fd does not match the client's registered fd." << std::endl;
 		}
@@ -177,7 +199,6 @@ void ServerManager::checkClientTimeouts() {
 		std::map<int, RegisteredClient>::iterator next = it;
 		++next;
 
-		// TODO: handle reconnections, maybe with a second layer of time out
         if (now - it->second.getLastPongTime() > 90) {
 			std::cout << "Client " << it->second.getNickname() << " timed out.\n";
 			_commandManager->executeCommand(it->second.getFd(), "QUIT :timed out");
@@ -186,4 +207,17 @@ void ServerManager::checkClientTimeouts() {
 		}
 		it = next;
 	}
+}
+
+// Buffer related methods
+void ServerManager::addClientBuffer(int client_fd, ClientBuffer *clientBuffer) {
+    _clientBuffers[client_fd] = clientBuffer;
+}
+
+void ServerManager::removeClientBuffer(int client_fd) {
+    _clientBuffers.erase(client_fd);
+}
+
+ClientBuffer *ServerManager::getClientBufferFromFd(int client_fd) {
+    return (_clientBuffers[client_fd]);
 }

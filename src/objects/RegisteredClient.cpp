@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:17:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/25 12:56:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:21:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@ const std::string &RegisteredClient::getNickname() const {
 
 const std::string &RegisteredClient::getUsername() const {
     return _username;
+}
+
+const std::string &RegisteredClient::getRealName() const {
+    return (_realName);
 }
 
 bool RegisteredClient::isOnline() const {
