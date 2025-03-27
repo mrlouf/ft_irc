@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:07:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 11:06:07 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:36:49 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class Channel {
 		bool _userLimitSet;
 		bool _inviteOnlySet;
 		bool _topicRestrictedSet;
+		bool _botPresent;
 
 		std::vector<RegisteredClient*> _members;
 		std::vector<RegisteredClient*> _operators;
@@ -53,6 +54,7 @@ class Channel {
 		const std::string &getTopic() const;
 		const std::vector<RegisteredClient*> &getMembers() const;
 		const std::vector<RegisteredClient*> &getOperators() const;
+		RegisteredClient *getBot() const;
 
 		void setTopic(const std::string &topic);
 		void setName(const std::string &name);

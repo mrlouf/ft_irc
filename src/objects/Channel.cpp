@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:13:38 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 11:13:27 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:40:08 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,14 @@ const std::string &Channel::getName() const { return (_name);}
 const std::string &Channel::getTopic() const { return (_topic);}
 const std::vector<RegisteredClient*> &Channel::getMembers() const { return (_members);}
 const std::vector<RegisteredClient*> &Channel::getOperators() const { return (_operators);}
+RegisteredClient *Channel::getBot() const {
+	for (std::vector<RegisteredClient*>::const_iterator it = _members.begin(); it != _members.end(); it++) {
+		if ((*it)->isBot()) {
+			return (*it);
+		}
+	}
+	return NULL;
+}
 
 void Channel::setTopic(const std::string &topic) { _topic = topic; }
 

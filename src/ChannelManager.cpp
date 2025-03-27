@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ChannelManager.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:28:43 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 10:20:13 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:51:16 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,16 @@
 #include "../includes/ClientManager.hpp"
 
 // Constructor and Destructor
-ChannelManager::ChannelManager(ClientManager *clientManager): _clientManager(clientManager) {}
+ChannelManager::ChannelManager(ClientManager *clientManager): _clientManager(clientManager) {
+	_bot = new RegisteredClient(1000, "BotUser", "BotUser1");
+	_bot->setBot(true);
 
-ChannelManager::~ChannelManager() {}
+	_clientManager->registerClient("BotUser", "BotUser1", 1000);
+}
+
+ChannelManager::~ChannelManager() {
+	delete _bot;
+}
 
 // Getters and Setters
 const std::map<std::string, Channel> &ChannelManager::getChannelList() const { return (_channels); }
@@ -35,14 +42,17 @@ bool ChannelManager::createChannel(const std::string &name) {
     }
 
     _channels[name] = Channel(name);
-    return (true);
+	
+	_channels[name].addMember(_bot);
+
+	return (true);
 }
 
 bool ChannelManager::removeChannel(const std::string &name) {
 	if (_channels.find(name) == _channels.end()) {
         return (false);
     }
-	
+
 	_channels.erase(name);
 	return (true);
 }

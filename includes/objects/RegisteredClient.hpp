@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RegisteredClient.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:28:23 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:00:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,12 @@
 # include <unistd.h>
 
 class RegisteredClient {
-	private:
+	protected:
 		int _fd;
 		std::string _nickname;
 		std::string _username;
 		bool _online;
+		bool _isBot;
 		time_t _lastPingTime;
 		time_t _lastPongTime;
 
@@ -38,6 +39,7 @@ class RegisteredClient {
 		const std::string &getNickname() const;
 		const std::string &getUsername() const;
 		bool isOnline() const;
+		bool isBot() const;
 		void setLastPingTime(time_t time);
 		void setLastPongTime(time_t time);
 
@@ -45,6 +47,7 @@ class RegisteredClient {
 		void setNickname(const std::string &nickname);
 		void setUsername(const std::string &username);
 		void setOnline(bool status);
+		void setBot(bool status);
 		time_t getLastPingTime() const;
 		time_t getLastPongTime() const;
 		
