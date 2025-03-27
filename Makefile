@@ -26,7 +26,7 @@ NAME        := ./ircserv
 # -=-=-=-=-    FLAG -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 
 CPP          = c++
-FLAGS       = -Werror -Wall -Wextra -std=c++98 -pedantic -g -fsanitize=address
+FLAGS       = -Werror -Wall -Wextra -std=c++98 -pedantic -g #-fsanitize=address
 DEPFLAGS    = -MMD -MP
 
 # -=-=-=-=-    PATH -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- #
@@ -43,6 +43,7 @@ SRC         := src/main.cpp \
 				src/ClientManager.cpp \
 				src/ChannelManager.cpp \
 				src/CommandManager.cpp \
+				src/objects/ClientBuffer.cpp \
 				src/objects/RegisteredClient.cpp \
 				src/objects/Channel.cpp \
 				src/commands/PassCommand.cpp \
@@ -57,6 +58,7 @@ SRC         := src/main.cpp \
 				src/commands/PingCommand.cpp \
 				src/commands/PongCommand.cpp \
 				src/commands/PrivmsgCommand.cpp \
+				src/commands/NoticeCommand.cpp \
 				src/commands/ModeCommand.cpp \
 				src/commands/TopicCommand.cpp \
 				src/commands/WhoCommand.cpp \

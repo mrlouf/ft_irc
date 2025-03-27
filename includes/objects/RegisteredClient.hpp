@@ -20,10 +20,12 @@
 # include <unistd.h>
 
 class RegisteredClient {
-	protected:
+	private:
+		std::string _buffer;
 		int _fd;
 		std::string _nickname;
 		std::string _username;
+		std::string _realName;
 		bool _online;
 		bool _isBot;
 		time_t _lastPingTime;
@@ -38,6 +40,7 @@ class RegisteredClient {
 		int getFd() const;
 		const std::string &getNickname() const;
 		const std::string &getUsername() const;
+		const std::string &getRealName() const;
 		bool isOnline() const;
 		bool isBot() const;
 		void setLastPingTime(time_t time);
@@ -50,9 +53,12 @@ class RegisteredClient {
 		void setBot(bool status);
 		time_t getLastPingTime() const;
 		time_t getLastPongTime() const;
+		std::string &getBuffer();
 		
 		//Methods
 		std::string getHost() const;
+		void appendToBuffer(const std::string& data);
+    	
 };
 
 #endif

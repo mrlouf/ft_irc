@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:20:26 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 10:04:28 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:42:47 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include "../includes/objects/Channel.hpp"
 
 // Constructor and destructor
-ClientManager::ClientManager(const std::string &password, ServerManager *serverManager): _password(password), _serverManager(serverManager) {}
+ClientManager::ClientManager(const std::string &password, ServerManager *serverManager): _password(password), _serverAddress("localhost"), _serverManager(serverManager) {}
 
 ClientManager::~ClientManager() {}
 
@@ -24,6 +24,7 @@ ClientManager::~ClientManager() {}
 std::map<std::string, RegisteredClient> &ClientManager::getRegisteredClients(void){
     return (_registeredClients);
 }
+
 
 std::map<int, RegisteredClient> &ClientManager::getRegisteredFds(void){
     return (_registeredFds);
@@ -43,6 +44,7 @@ RegisteredClient *ClientManager::getClientFromFd(int fd) {
     return NULL;
 }
 
+
 // Methods
 bool ClientManager::isNicknameRegistered(const std::string& nickname) const {
     return _registeredClients.find(nickname) != _registeredClients.end();
@@ -59,9 +61,22 @@ bool ClientManager::isRegistered(std::string &nickname, int client_fd) {
 }
 
 bool ClientManager::registerClient(const std::string &nickname, const std::string &username, int client_fd) {
+    // Register the client
     _registeredClients[nickname] = RegisteredClient(client_fd, nickname, username);
     _registeredFds[client_fd] = RegisteredClient(client_fd, nickname, username);
+
     std::cout << "Client " << client_fd << " registered with nickname: " << nickname << " and username: " << username << std::endl;
+    
+    std::string welcomeMessage = ":" + _serverAddress + " 001 " + nickname + " :Welcome to the Internet Relay Network " + nickname + "! (" + username + "@" + "localhost)\r\n";
+    
+    ssize_t bytes_sent = send(client_fd, welcomeMessage.c_str(), welcomeMessage.size(), 0);
+    
+    if (bytes_sent == -1) {
+        std::cerr << "Error sending welcome message to client " << client_fd << std::endl;
+        return false;
+    }
+
+    // Success
     return true;
 }
 
@@ -108,7 +123,6 @@ void ClientManager::unregisterClient(const std::string &nickname, int client_fd)
     std::map<std::string, RegisteredClient>::iterator it = _registeredClients.find(nickname);
     if (it != _registeredClients.end()) {
         int fd = it->second.getFd();
-        //TODO: remove client from channels
         
         ChannelManager *channelManager = _serverManager->getChannelManager();
         if (channelManager) {

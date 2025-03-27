@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 12:17:34 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:37:42 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:39:16 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 # include "../../includes/ClientManager.hpp"
 # include "../../includes/ServerManager.hpp"
 # include "../../includes/ChannelManager.hpp"
+# include <cerrno>
+# include <cstdio>
 
 WhoCommand::WhoCommand(ServerManager *serverManager, ChannelManager *channelManager)
     : _serverManager(serverManager), _channelManager(channelManager) {}
@@ -39,24 +41,46 @@ void WhoCommand::executeCommand(int client_fd, const ParsedMessage& parsedMsg) {
 }
 
 void WhoCommand::sendWhoReply(int client_fd, Channel* channel) {
-	for (size_t i = 0; i < channel->getMembers().size(); ++i) {
-		RegisteredClient* member = channel->getMembers()[i];
-		std::string modes = (channel->isOperator(member) ? "@" : "");
-		std::string realName = member->getUsername();
+    RegisteredClient* requester = _serverManager->getClientManager()->getClientFromFd(client_fd);
+    if (!requester) {
+        std::cerr << "WHO: Requesting client not found!" << std::endl;
+        return;
+    }
 
-		std::stringstream timeStream;
-		timeStream << time(NULL);
-		std::string timeStr = timeStream.str();
+    std::cout << "WHO command received for channel: " << channel->getName() << std::endl;
 
-		std::string WhoMessage = ":" + _serverManager->getServerName() + " 352 " +
-								member->getNickname() + " " + channel->getName() + " " +
-								member->getNickname() + " " + member->getHost() + " " +
-								_serverManager->getServerName() + " " + timeStr + " " +
-								modes + " :" + realName + "\r\n";
-		send(client_fd, WhoMessage.c_str(), WhoMessage.length(), 0);
-	}
+    for (size_t i = 0; i < channel->getMembers().size(); ++i) {
+        RegisteredClient* member = channel->getMembers()[i];
 
-	std::string endMessage = ":" + _serverManager->getServerName() + " 366 " +
-							channel->getName() + " :End of /Who list.\r\n";
-	send(client_fd, endMessage.c_str(), endMessage.length(), 0);
+        std::string status = (channel->isOperator(member) ? "@" : "");
+
+        std::string whoMessage = ":" + _serverManager->getServerName() + " 352 " +
+                                 requester->getNickname() + " " +
+                                 channel->getName() + " " +
+                                 member->getUsername() + " " +
+                                 member->getHost() + " " + 
+                                 _serverManager->getServerName() + " " + 
+                                 member->getNickname() + " " +
+                                 status + "H :0 " +
+                                 member->getRealName() + "\r\n";
+
+        std::cout << "WHO Reply for " << member->getNickname() 
+                  << " | Real Name: " << member->getRealName() << std::endl;
+
+        ssize_t sentBytes = send(client_fd, whoMessage.c_str(), whoMessage.length(), 0);
+        if (sentBytes == -1) {
+            perror("send WHO reply failed");
+        }
+    }
+
+    std::string endMessage = ":" + _serverManager->getServerName() + " 315 " + 
+                             requester->getNickname() + " " + 
+                             channel->getName() + " :End of WHO list.\r\n";
+
+    std::cout << "Sending End of WHO List: " << endMessage << std::endl;
+
+    ssize_t sentEnd = send(client_fd, endMessage.c_str(), endMessage.length(), 0);
+    if (sentEnd == -1) {
+        perror("send End of WHO List failed");
+    }
 }

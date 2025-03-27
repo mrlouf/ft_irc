@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:16:37 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 10:04:49 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:40:30 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class ServerManager;
 class ClientManager {
 private:
 	std::string _password;
+	std::string _serverAddress;
 	ServerManager *_serverManager;
 	
 	std::map<std::string, RegisteredClient> _registeredClients;
@@ -55,7 +56,6 @@ public:
 	RegisteredClient *getClientFromFd(int fd);
 
 	// Methods
-	bool authenticateClient(const std::string &input);
 	bool isNicknameRegistered(const std::string& nickname) const;
 	bool isRegistered(std::string &nickname, int client_fd);
 	bool registerClient(const std::string &nickname, const std::string &username, int client_fd);

@@ -32,6 +32,10 @@ const std::string &RegisteredClient::getUsername() const {
     return _username;
 }
 
+const std::string &RegisteredClient::getRealName() const {
+    return (_realName);
+}
+
 bool RegisteredClient::isOnline() const {
     return _online;
 }
@@ -76,6 +80,10 @@ time_t RegisteredClient::getLastPongTime() const {
     return _lastPongTime;
 }
 
+std::string &RegisteredClient::getBuffer() {
+    return _buffer;
+}
+
 //Methods
 std::string RegisteredClient::getHost() const {
 	struct sockaddr_in addr;
@@ -88,4 +96,8 @@ std::string RegisteredClient::getHost() const {
 	const char *ipStr = inet_ntoa(addr.sin_addr);
 
 	return std::string(ipStr);
+}
+
+void RegisteredClient::appendToBuffer(const std::string& data) {
+    _buffer += data;
 }

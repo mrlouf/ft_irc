@@ -28,6 +28,7 @@ CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *cha
 	_commands["PONG"] = new PongCommand(clientManager);
 	_commands["JOIN"] = new JoinCommand(channelManager, clientManager, serverManager);
 	_commands["PRIVMSG"] = new PrivmsgCommand(channelManager, clientManager);
+	_commands["NOTICE"] = new NoticeCommand(channelManager, clientManager);
 	_commands["MODE"] = new ModeCommand(channelManager, clientManager);
 	_commands["TOPIC"] = new TopicCommand(channelManager, clientManager);
 	_commands["WHO"] = new WhoCommand(serverManager, channelManager);
@@ -66,8 +67,7 @@ ParsedMessage CommandManager::parseInput(const std::string &input){
 	return parsedMsg;
 }
 
-void CommandManager::executeCommand(int client_fd, const std::string& input) {
-	std::cout << "Input:" << std::endl << input << "End of input" << std::endl;
+void CommandManager::executeCommand(int client_fd, const std::string &input) {
 	std::istringstream stream(input);
 	std::string line;
 
