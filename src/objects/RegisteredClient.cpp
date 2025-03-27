@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:17:54 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/20 12:32:15 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:21:17 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,10 @@ const std::string &RegisteredClient::getNickname() const {
 
 const std::string &RegisteredClient::getUsername() const {
     return _username;
+}
+
+const std::string &RegisteredClient::getRealName() const {
+    return (_realName);
 }
 
 bool RegisteredClient::isOnline() const {
@@ -68,6 +72,10 @@ time_t RegisteredClient::getLastPongTime() const {
     return _lastPongTime;
 }
 
+std::string &RegisteredClient::getBuffer() {
+    return _buffer;
+}
+
 //Methods
 std::string RegisteredClient::getHost() const {
 	struct sockaddr_in addr;
@@ -80,4 +88,8 @@ std::string RegisteredClient::getHost() const {
 	const char *ipStr = inet_ntoa(addr.sin_addr);
 
 	return std::string(ipStr);
+}
+
+void RegisteredClient::appendToBuffer(const std::string& data) {
+    _buffer += data;
 }

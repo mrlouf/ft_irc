@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PrivmsgCommand.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/27 11:24:24 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/27 11:27:28 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/commands/PrivmsgCommand.hpp"
 #include "../../includes/ClientManager.hpp"
 #include "../../includes/ChannelManager.hpp"
@@ -23,6 +35,10 @@ void PrivmsgCommand::executeCommand(int client_fd, const ParsedMessage& parsedMs
 		std::string errorMsg = "ERROR: You must be a registered client to send messages\r\n";
 		send(client_fd, errorMsg.c_str(), errorMsg.length(), 0);
 		return;
+	}
+
+	if (message.find("DCC SEND") == 0) {
+		std::cout << "📁 DCC SEND request detected from " << sender->getNickname() << " to " << target << ": " << message << std::endl;
 	}
 
 	if (target[0] == '#') {
