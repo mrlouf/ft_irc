@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/27 12:46:55 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/03/27 13:54:21 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ void ServerManager::run() {
             lastPingCheckTime = currentTime;
         }
 
-		if (currentTime - lastBotMessageTime >= 5) { // 5 minutes = 300 seconds
+		if (currentTime - lastBotMessageTime >= 60) {
 			for (std::map<std::string, Channel>::const_iterator it = _channelManager->getChannelList().begin(); it != _channelManager->getChannelList().end(); ++it) {
 					
 					RegisteredClient* bot = _clientManager->getClientFromFd(1000);
@@ -216,9 +216,9 @@ void ServerManager::checkClientTimeouts() {
 
         if (now - it->second.getLastPongTime() > 90) {
 			std::cout << "Client " << it->second.getNickname() << " timed out.\n";
+            std::string timedOutMessage = "Disconnected (timed out)\r\n";
+            send(it->second.getFd(), timedOutMessage.c_str(), timedOutMessage.length(), 0);
 			_commandManager->executeCommand(it->second.getFd(), "QUIT :timed out");
-            //disconnectClient(it->second.getNickname(), it->first);
-			//clients.erase(it);
 		}
 		it = next;
 	}
