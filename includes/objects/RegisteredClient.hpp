@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RegisteredClient.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 09:15:00 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/26 16:20:50 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 14:00:56 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ class RegisteredClient {
 		std::string _username;
 		std::string _realName;
 		bool _online;
+		bool _isBot;
 		time_t _lastPingTime;
 		time_t _lastPongTime;
 
@@ -41,6 +42,7 @@ class RegisteredClient {
 		const std::string &getUsername() const;
 		const std::string &getRealName() const;
 		bool isOnline() const;
+		bool isBot() const;
 		void setLastPingTime(time_t time);
 		void setLastPongTime(time_t time);
 
@@ -48,6 +50,7 @@ class RegisteredClient {
 		void setNickname(const std::string &nickname);
 		void setUsername(const std::string &username);
 		void setOnline(bool status);
+		void setBot(bool status);
 		time_t getLastPingTime() const;
 		time_t getLastPongTime() const;
 		std::string &getBuffer();

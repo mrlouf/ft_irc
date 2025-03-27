@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   CommandManager.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/27 11:27:59 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/27 12:33:26 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ void CommandManager::executeCommand(int client_fd, const std::string &input) {
 					   parsedMsg.command.begin(), ::toupper);
 
 		if (_commands.find(parsedMsg.command) != _commands.end()) {
+			std::cout << parsedMsg.command << std::endl;
 			_commands[parsedMsg.command]->executeCommand(client_fd, parsedMsg);
 
 			std::cout << "Client with fd " << client_fd << " executed command " << parsedMsg.command << std::endl;

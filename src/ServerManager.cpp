@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerManager.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/27 11:15:20 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/27 12:46:55 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void ServerManager::run() {
     _fds.push_back(server_poll_fd);
 
     time_t lastPingCheckTime = time(NULL);
+	time_t lastBotMessageTime = time(NULL);
+
 
     while (true) {
         int poll_count = poll(&_fds[0], static_cast<unsigned int>(_fds.size()), 1000);
@@ -61,6 +63,7 @@ void ServerManager::run() {
             std::cerr << "Poll error." << std::endl;
             break;
         }
+
 
         for (size_t i = 0; i < _fds.size(); ++i) {
             if (_fds[i].fd == _socketManager->getServerFd() && (_fds[i].revents & POLLIN)) {
@@ -107,8 +110,19 @@ void ServerManager::run() {
             checkClientTimeouts();
             lastPingCheckTime = currentTime;
         }
+
+		if (currentTime - lastBotMessageTime >= 5) { // 5 minutes = 300 seconds
+			for (std::map<std::string, Channel>::const_iterator it = _channelManager->getChannelList().begin(); it != _channelManager->getChannelList().end(); ++it) {
+					
+					RegisteredClient* bot = _clientManager->getClientFromFd(1000);
+					std::string message = "PRIVMSG " + it->second.getName() + " : holiwi";
+					_commandManager->executeCommand(bot->getFd(), message);
+				}
+			lastBotMessageTime = currentTime;
+			}
+		}
+
     }
-}
 
 bool ServerManager::readFromClient(int client_fd, std::string &input) {
     char buffer[1024];

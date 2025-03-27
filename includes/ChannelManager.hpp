@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ChannelManager.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 10:29:13 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/24 10:03:55 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/26 16:31:34 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,14 @@
 # include <sys/socket.h>
 
 class ClientManager;
+class RegisteredClient;
 
 class ChannelManager {
 	private:
     	std::map<std::string, Channel> _channels;
 		ClientManager *_clientManager;
+
+		RegisteredClient *_bot;
 
 	public:
 		// Constructor and Destructor
