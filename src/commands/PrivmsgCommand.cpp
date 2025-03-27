@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   PrivmsgCommand.cpp                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/27 11:24:24 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/27 11:27:28 by hmunoz-g         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/commands/PrivmsgCommand.hpp"
 #include "../../includes/ClientManager.hpp"
 #include "../../includes/ChannelManager.hpp"

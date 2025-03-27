@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/26 15:51:35 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:15:20 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ bool ServerManager::readFromClient(int client_fd, std::string &input) {
     ssize_t bytes_read = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
     
     if (bytes_read <= 0) {
+        getClientBufferFromFd(client_fd)->getBuffer().erase();
         return false;
     }
 

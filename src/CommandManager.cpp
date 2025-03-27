@@ -6,7 +6,7 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:23 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/26 15:58:34 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:27:59 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ CommandManager::CommandManager(ClientManager *clientManager, ChannelManager *cha
 	_commands["PONG"] = new PongCommand(clientManager);
 	_commands["JOIN"] = new JoinCommand(channelManager, clientManager, serverManager);
 	_commands["PRIVMSG"] = new PrivmsgCommand(channelManager, clientManager);
+	_commands["NOTICE"] = new NoticeCommand(channelManager, clientManager);
 	_commands["MODE"] = new ModeCommand(channelManager, clientManager);
 	_commands["TOPIC"] = new TopicCommand(channelManager, clientManager);
 	_commands["WHO"] = new WhoCommand(serverManager, channelManager);
@@ -67,7 +68,6 @@ ParsedMessage CommandManager::parseInput(const std::string &input){
 }
 
 void CommandManager::executeCommand(int client_fd, const std::string &input) {
-	std::cout << "fd:" << client_fd << std::endl;
 	std::istringstream stream(input);
 	std::string line;
 

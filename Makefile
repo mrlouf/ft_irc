@@ -6,7 +6,7 @@
 #    By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/02/13 13:48:05 by hmunoz-g          #+#    #+#              #
-#    Updated: 2025/03/26 15:41:20 by hmunoz-g         ###   ########.fr        #
+#    Updated: 2025/03/27 11:28:22 by hmunoz-g         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -58,6 +58,7 @@ SRC         := src/main.cpp \
 				src/commands/PingCommand.cpp \
 				src/commands/PongCommand.cpp \
 				src/commands/PrivmsgCommand.cpp \
+				src/commands/NoticeCommand.cpp \
 				src/commands/ModeCommand.cpp \
 				src/commands/TopicCommand.cpp \
 				src/commands/WhoCommand.cpp \
