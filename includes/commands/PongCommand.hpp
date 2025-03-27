@@ -1,35 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PopulationCommand.hpp                              :+:      :+:    :+:   */
+/*   PongCommand.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 11:16:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:08:55 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/03/20 09:34:19 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/20 09:43:38 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//This is a TESTING command
+#ifndef PONGCOMMAND_HPP
+#define PONGCOMMAND_HPP
 
-#ifndef POPULATIONCOMMAND_HPP
-# define POPULATIONCOMMAND_HPP
-
-# include <string>
-# include <sys/socket.h>
-
-
-# include "ICommand.hpp"
+#include "../commands/ICommand.hpp"
 
 class ClientManager;
 
-class PopulationCommand : public ICommand {
-private:
-    ClientManager *_clientManager;
-
-public:
-    PopulationCommand(ClientManager *clientManager);
-    void executeCommand(int client_fd, const ParsedMessage &parsedMsg);
+class PongCommand : public ICommand {
+	private:
+		ClientManager *_clientManager;
+	
+	public:
+		PongCommand(ClientManager *clientManager): _clientManager(clientManager) {}
+		void executeCommand(int client_fd, const ParsedMessage& parsedMsg);
 };
 
 #endif

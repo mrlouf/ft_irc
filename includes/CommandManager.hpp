@@ -6,14 +6,15 @@
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:24:49 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/18 16:27:47 by hmunoz-g         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:27:07 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMANDMANAGER_HPP
 # define COMMANDMANAGER_HPP
 
-# include <string>
+# include <sstream>
+# include <iostream>
 # include <map>
 # include <vector>
 # include <sstream>
@@ -23,10 +24,28 @@
 # include <sys/types.h>
 # include <sys/socket.h>
 
-# include "PopulationCommand.hpp"
-# include "QuitCommand.hpp"
+# include "commands/PassCommand.hpp"
+# include "commands/NickCommand.hpp"
+# include "commands/UserCommand.hpp"
+# include "commands/CapCommand.hpp"
+# include "commands/PopulationCommand.hpp"
+# include "commands/ChannelListCommand.hpp"
+# include "commands/ChannelModesCommand.hpp"
+# include "commands/QuitCommand.hpp"
+# include "commands/JoinCommand.hpp"
+# include "commands/PingCommand.hpp"
+# include "commands/PongCommand.hpp"
+# include "commands/PrivmsgCommand.hpp"
+# include "commands/NoticeCommand.hpp"
+# include "commands/WhoCommand.hpp"
+# include "commands/ModeCommand.hpp"
+# include "commands/TopicCommand.hpp"
+# include "commands/InviteCommand.hpp"
+# include "commands/KickCommand.hpp"
+
 
 class ServerManager;
+class ChannelManager;
 
 class CommandManager {
 	private:
@@ -34,7 +53,7 @@ class CommandManager {
 
 	public:
 		// Constructor and Destructor
-		CommandManager(ClientManager* clientManager, ServerManager* serverManager);
+		CommandManager(ClientManager* clientManager, ChannelManager *channelmanager, ServerManager* serverManager);
 		~CommandManager();
 
 		// Methods

@@ -1,35 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   PopulationCommand.hpp                              :+:      :+:    :+:   */
+/*   ChannelModesCommand.hpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hmunoz-g <hmunoz-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 11:16:21 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/19 11:08:55 by hmunoz-g         ###   ########.fr       */
+/*   Created: 2025/03/21 10:41:58 by hmunoz-g          #+#    #+#             */
+/*   Updated: 2025/03/21 10:53:48 by hmunoz-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//This is a TESTING command
+// This is a TESTING command
 
-#ifndef POPULATIONCOMMAND_HPP
-# define POPULATIONCOMMAND_HPP
+#ifndef CHANNELMODESCOMMAND_HPP
+# define CHANNELMODESCOMMAND_HPP
 
 # include <string>
 # include <sys/socket.h>
 
-
 # include "ICommand.hpp"
 
-class ClientManager;
+class ChannelManager;
 
-class PopulationCommand : public ICommand {
-private:
-    ClientManager *_clientManager;
+class ChannelModesCommand : public ICommand {
+	private:
+		ChannelManager *_channelManager;
 
-public:
-    PopulationCommand(ClientManager *clientManager);
-    void executeCommand(int client_fd, const ParsedMessage &parsedMsg);
+	public:
+		ChannelModesCommand(ChannelManager *channelManager);
+		void executeCommand(int client_fd, const ParsedMessage &parsedMsg);
 };
 
 #endif
