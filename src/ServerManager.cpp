@@ -6,7 +6,7 @@
 /*   By: nponchon <nponchon@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:08:39 by hmunoz-g          #+#    #+#             */
-/*   Updated: 2025/03/27 15:35:03 by nponchon         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:14:38 by nponchon         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,6 @@ void ServerManager::run() {
                     --i;
                 } else {
                     _commandManager->executeCommand(_fds[i].fd, input);
-                    
-                    //!Erase this before turning in
-                    std::cout << "Client sent:" << input << std::endl;
 
                     RegisteredClient* client = _clientManager->getClientFromFd(_fds[i].fd);
                     if (client)
